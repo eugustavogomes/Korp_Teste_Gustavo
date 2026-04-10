@@ -4,12 +4,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>faturamento-service-4a2b9c1d-3e5f-6789-abcd</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.16" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
