@@ -6,7 +6,8 @@
 
 @if (erro) {
   <div class="error-message">
-    <mat-icon>error_outline</mat-icon> {{ erro }}
+    <mat-icon>{{ erro.tipo === 'servico_indisponivel' ? 'cloud_off' : erro.tipo === 'rede' ? 'wifi_off' : 'error_outline' }}</mat-icon>
+    {{ erro.mensagem }}
   </div>
 }
 
@@ -17,9 +18,17 @@
       <a mat-stroked-button routerLink="/notas">
         <mat-icon>arrow_back</mat-icon> Voltar
       </a>
-      <button mat-raised-button color="primary" (click)="imprimir()">
-        <mat-icon>print</mat-icon> Imprimir
-      </button>
+      @if (nota.status === StatusNotaFiscal.Aberta) {
+        <button mat-raised-button color="primary" [disabled]="processando" (click)="imprimir()">
+          <mat-icon>{{ processando ? 'hourglass_empty' : 'print' }}</mat-icon>
+          {{ processando ? 'Processando...' : 'Imprimir' }}
+        </button>
+      } @else {
+        <span style="display: flex; align-items: center; gap: 4px; color: var(--mat-sys-outline); font-size: 0.9rem">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px">lock</mat-icon>
+          Nota fechada — impressão não permitida
+        </span>
+      }
     </div>
   </div>
 
@@ -37,8 +46,8 @@
         <div>
           <p style="margin: 0; font-size: 0.75rem; color: var(--mat-sys-outline); text-transform: uppercase; letter-spacing: 0.05em">Status</p>
           <p style="margin: 4px 0 0">
-            <span [class]="nota.status === StatusNotaFiscal.Emitida ? 'status-emitida' : 'status-cancelada'">
-              {{ nota.status === StatusNotaFiscal.Emitida ? 'Emitida' : 'Cancelada' }}
+            <span [class]="nota.status === StatusNotaFiscal.Aberta ? 'status-emitida' : 'status-cancelada'">
+              {{ nota.status === StatusNotaFiscal.Aberta ? 'Aberta' : 'Fechada' }}
             </span>
           </p>
         </div>

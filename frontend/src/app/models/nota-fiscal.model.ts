@@ -1,6 +1,6 @@
 export enum StatusNotaFiscal {
-  Emitida = 1,
-  Cancelada = 2,
+  Aberta = 1,
+  Fechada = 2,
 }
 
 export interface ItemNotaFiscal {

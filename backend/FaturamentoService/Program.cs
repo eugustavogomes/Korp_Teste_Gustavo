@@ -5,6 +5,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Polly;
+using Polly.Extensions.Http;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -28,14 +29,34 @@ try
     builder.Services.AddDbContext<FaturamentoDbContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+    var retryPolicy = HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .WaitAndRetryAsync(
+            retryCount: 3,
+            sleepDurationProvider: attempt => TimeSpan.FromSeconds(Math.Pow(2, attempt)),
+            onRetry: (result, delay, attempt, _) =>
+                Log.Warning("Tentativa {Attempt}/3 de conectar ao EstoqueService. Aguardando {Delay}s... ({Reason})",
+                    attempt, delay.TotalSeconds, result.Exception?.Message ?? result.Result?.StatusCode.ToString()));
+
+    var circuitBreakerPolicy = HttpPolicyExtensions
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(
+            handledEventsAllowedBeforeBreaking: 5,
+            durationOfBreak: TimeSpan.FromSeconds(30),
+            onBreak: (_, duration) =>
+                Log.Warning("EstoqueService indisponível. Circuit aberto por {Duration}s.", duration.TotalSeconds),
+            onReset: () =>
+                Log.Information("EstoqueService disponível novamente. Circuit fechado."),
+            onHalfOpen: () =>
+                Log.Information("Testando disponibilidade do EstoqueService..."));
+
     builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
     {
         client.BaseAddress = new Uri(
             builder.Configuration["EstoqueService:BaseUrl"] ?? "http://localhost:5189");
     })
-    .AddTransientHttpErrorPolicy(policy =>
-        policy.WaitAndRetryAsync(3, retryAttempt =>
-            TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
+    .AddPolicyHandler(retryPolicy)
+    .AddPolicyHandler(circuitBreakerPolicy);
 
     builder.Services.AddCors(options =>
     {

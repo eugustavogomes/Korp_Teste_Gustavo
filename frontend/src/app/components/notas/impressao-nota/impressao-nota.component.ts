@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { NotaFiscal, StatusNotaFiscal } from '../../../models/nota-fiscal.model';
 import { NotaFiscalService } from '../../../services/nota-fiscal';
+import { ApiError } from '../../../services/error-handler';
 
 @Component({
   selector: 'app-impressao-nota',
@@ -18,7 +19,7 @@ export class ImpressaoNotaComponent implements OnInit, OnDestroy {
 
   nota: NotaFiscal | null = null;
   processando = false;
-  erro: string | null = null;
+  erro: ApiError | null = null;
   StatusNotaFiscal = StatusNotaFiscal;
 
   constructor(
@@ -46,11 +47,30 @@ export class ImpressaoNotaComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: nota => (this.nota = nota),
-        error: () => (this.erro = 'Erro ao carregar nota'),
+        error: (err: ApiError) => (this.erro = err),
       });
   }
 
   imprimir(): void {
-    window.print();
+    if (!this.nota || this.nota.status !== StatusNotaFiscal.Aberta) return;
+
+    this.processando = true;
+    this.erro = null;
+
+    this.notaService
+      .imprimirNota(this.nota.id)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.processando = false))
+      )
+      .subscribe({
+        next: () => {
+          this.nota!.status = StatusNotaFiscal.Fechada;
+          window.print();
+        },
+        error: (err: ApiError) => {
+          this.erro = err;
+        },
+      });
   }
 }

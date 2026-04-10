@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace FaturamentoService.Services;
 
 public class EstoqueClient : IEstoqueClient
@@ -19,7 +21,24 @@ public class EstoqueClient : IEstoqueClient
         {
             var content = await response.Content.ReadAsStringAsync();
             _logger.LogError("EstoqueService retornou {Status}: {Content}", response.StatusCode, content);
-            response.EnsureSuccessStatusCode();
+
+            var mensagem = ExtrairMensagem(content) ?? $"Erro {(int)response.StatusCode} no EstoqueService";
+            throw new EstoqueException(mensagem, (int)response.StatusCode);
+        }
+    }
+
+    private static string? ExtrairMensagem(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("mensagem", out var prop))
+                return prop.GetString();
+            return json.Length > 0 ? json : null;
+        }
+        catch
+        {
+            return json.Length > 0 ? json : null;
         }
     }
 }

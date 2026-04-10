@@ -12,6 +12,6 @@ public class NotaFiscal
 
 public enum StatusNotaFiscal
 {
-    Emitida = 1,
-    Cancelada = 2
+    Aberta = 1,
+    Fechada = 2
 }

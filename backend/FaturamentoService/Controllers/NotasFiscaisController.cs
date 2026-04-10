@@ -57,26 +57,15 @@ public class NotasFiscaisController : ControllerBase
             {
                 Numero = $"NF-{DateTime.UtcNow:yyyyMMddHHmmssfff}",
                 DataEmissao = DateTime.UtcNow,
-                Status = StatusNotaFiscal.Emitida,
+                Status = StatusNotaFiscal.Aberta,
                 Total = itens.Sum(i => i.Subtotal),
                 Itens = itens
             };
 
-            var baixaRequest = new BaixaEstoqueRequest
-            {
-                Itens = request.Itens.Select(i => new ItemBaixaEstoque
-                {
-                    ProdutoId = i.ProdutoId,
-                    Quantidade = i.Quantidade
-                }).ToList()
-            };
-
-            await _estoqueClient.BaixarEstoqueAsync(baixaRequest);
-
             _context.NotasFiscais.Add(notaFiscal);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Nota fiscal {Numero} emitida com sucesso. Total: {Total}", notaFiscal.Numero, notaFiscal.Total);
+            _logger.LogInformation("Nota fiscal {Numero} criada com status Aberta. Total: {Total}", notaFiscal.Numero, notaFiscal.Total);
 
             return CreatedAtAction(nameof(GetNotaFiscal), new { id = notaFiscal.Id }, notaFiscal);
         }
@@ -92,6 +81,61 @@ public class NotasFiscaisController : ControllerBase
         }
     }
 
+    [HttpPost("{id}/imprimir")]
+    public async Task<IActionResult> ImprimirNotaFiscal(int id)
+    {
+        try
+        {
+            var notaFiscal = await _context.NotasFiscais
+                .Include(n => n.Itens)
+                .FirstOrDefaultAsync(n => n.Id == id);
+
+            if (notaFiscal == null)
+                return NotFound();
+
+            if (notaFiscal.Status != StatusNotaFiscal.Aberta)
+                return BadRequest(new { mensagem = "Apenas notas com status Aberta podem ser impressas." });
+
+            var baixaRequest = new BaixaEstoqueRequest
+            {
+                Itens = notaFiscal.Itens.Select(i => new ItemBaixaEstoque
+                {
+                    ProdutoId = i.ProdutoId,
+                    Quantidade = i.Quantidade
+                }).ToList()
+            };
+
+            await _estoqueClient.BaixarEstoqueAsync(baixaRequest);
+
+            notaFiscal.Status = StatusNotaFiscal.Fechada;
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Nota fiscal {Numero} impressa. Status atualizado para Fechada.", notaFiscal.Numero);
+
+            return NoContent();
+        }
+        catch (EstoqueException ex) when (ex.StatusCode == 400)
+        {
+            _logger.LogWarning("EstoqueService rejeitou a baixa para nota {Id}: {Mensagem}", id, ex.Message);
+            return BadRequest(new { mensagem = ex.Message });
+        }
+        catch (EstoqueException ex)
+        {
+            _logger.LogError("EstoqueService retornou {Status} para nota {Id}: {Mensagem}", ex.StatusCode, id, ex.Message);
+            return StatusCode(503, new { mensagem = "EstoqueService indisponível. Tente novamente em instantes." });
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Falha de conexão com EstoqueService ao imprimir nota {Id}", id);
+            return StatusCode(503, new { mensagem = "EstoqueService indisponível. Tente novamente em instantes." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao imprimir nota fiscal {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro interno do servidor." });
+        }
+    }
+
     [HttpPut("{id}/cancelar")]
     public async Task<IActionResult> CancelarNotaFiscal(int id)
     {
@@ -101,10 +145,10 @@ public class NotasFiscaisController : ControllerBase
             if (notaFiscal == null)
                 return NotFound();
 
-            if (notaFiscal.Status == StatusNotaFiscal.Cancelada)
-                return BadRequest("Nota fiscal já está cancelada");
+            if (notaFiscal.Status == StatusNotaFiscal.Fechada)
+                return BadRequest("Nota fiscal já está fechada");
 
-            notaFiscal.Status = StatusNotaFiscal.Cancelada;
+            notaFiscal.Status = StatusNotaFiscal.Fechada;
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Nota fiscal {Numero} cancelada", notaFiscal.Numero);
