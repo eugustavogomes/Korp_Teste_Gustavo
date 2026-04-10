@@ -1,43 +1,37 @@
-<div style="max-width: 560px">
-  <div class="page-header">
-    <h2>{{ editando ? 'Editar Produto' : 'Novo Produto' }}</h2>
-  </div>
+<h2 mat-dialog-title>{{ editando ? 'Editar Produto' : 'Novo Produto' }}</h2>
 
+<mat-dialog-content style="min-width: 420px">
   @if (erro) {
-    <div class="error-message">
+    <div class="error-message" style="margin-bottom: 16px">
       <mat-icon>error_outline</mat-icon> {{ erro }}
     </div>
   }
 
-  <mat-card>
-    <mat-card-content style="padding: 24px">
-      <form (ngSubmit)="salvar()" #form="ngForm" style="display: flex; flex-direction: column; gap: 16px">
-        <mat-form-field appearance="outline">
-          <mat-label>Código</mat-label>
-          <input matInput [(ngModel)]="produto.codigo" name="codigo" required placeholder="Ex: PROD-001" />
-          <mat-icon matSuffix>qr_code</mat-icon>
-        </mat-form-field>
+  <form #form="ngForm" style="display: flex; flex-direction: column; gap: 16px; padding-top: 8px">
+    <mat-form-field appearance="outline">
+      <mat-label>Código</mat-label>
+      <input matInput [(ngModel)]="produto.codigo" name="codigo" required placeholder="Ex: PROD-001" />
+      <mat-icon matSuffix>qr_code</mat-icon>
+    </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Descrição</mat-label>
-          <input matInput [(ngModel)]="produto.descricao" name="descricao" required placeholder="Nome do produto" />
-          <mat-icon matSuffix>label</mat-icon>
-        </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Descrição</mat-label>
+      <input matInput [(ngModel)]="produto.descricao" name="descricao" required placeholder="Nome do produto" />
+      <mat-icon matSuffix>label</mat-icon>
+    </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Saldo em Estoque</mat-label>
-          <input matInput type="number" [(ngModel)]="produto.saldo" name="saldo" required min="0" />
-          <mat-icon matSuffix>inventory</mat-icon>
-        </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Saldo em Estoque</mat-label>
+      <input matInput type="number" [(ngModel)]="produto.saldo" name="saldo" required min="0" />
+      <mat-icon matSuffix>inventory</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
 
-        <div style="display: flex; gap: 12px; justify-content: flex-end; padding-top: 8px">
-          <a mat-stroked-button routerLink="/produtos">Cancelar</a>
-          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || salvando">
-            <mat-icon>save</mat-icon>
-            {{ salvando ? 'Salvando...' : 'Salvar' }}
-          </button>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="salvar()" [disabled]="form.invalid || salvando">
+    <mat-icon>save</mat-icon>
+    {{ salvando ? 'Salvando...' : 'Salvar' }}
+  </button>
+</mat-dialog-actions>

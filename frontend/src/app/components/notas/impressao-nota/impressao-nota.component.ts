@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { Subject, finalize, takeUntil } from 'rxjs';
 import { NotaFiscal, StatusNotaFiscal } from '../../../models/nota-fiscal.model';
 import { NotaFiscalService } from '../../../services/nota-fiscal';
@@ -11,7 +12,7 @@ import { ApiError } from '../../../services/error-handler';
 @Component({
   selector: 'app-impressao-nota',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, MatButtonModule, MatIconModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './impressao-nota.html',
 })
 export class ImpressaoNotaComponent implements OnInit, OnDestroy {

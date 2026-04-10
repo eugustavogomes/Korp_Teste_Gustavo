@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,8 +8,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { ProdutoService } from '../../../services/produto.service';
 import { NotaFiscalService } from '../../../services/nota-fiscal';
 import { Produto } from '../../../models/produto.model';
@@ -25,20 +25,21 @@ interface ItemForm {
   imports: [
     FormsModule,
     DecimalPipe,
-    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
     MatTableModule,
-    MatCardModule,
     MatTooltipModule,
+    MatDialogModule,
   ],
   templateUrl: './form-nota.html',
   styleUrl: './form-nota.scss',
 })
 export class FormNota implements OnInit {
+  private dialogRef = inject<MatDialogRef<FormNota>>(MatDialogRef, { optional: true });
+
   produtos: Produto[] = [];
   itens: ItemForm[] = [];
   colunas = ['descricao', 'quantidade', 'precoUnitario', 'subtotal', 'remover'];
@@ -82,6 +83,14 @@ export class FormNota implements OnInit {
     this.itens = this.itens.filter((_, i) => i !== index);
   }
 
+  cancelar(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
+    } else {
+      this.router.navigate(['/notas']);
+    }
+  }
+
   emitir(): void {
     if (this.itens.length === 0) return;
     this.salvando = true;
@@ -97,9 +106,15 @@ export class FormNota implements OnInit {
     };
 
     this.notaService.criarNota(request).subscribe({
-      next: () => this.router.navigate(['/notas']),
+      next: () => {
+        if (this.dialogRef) {
+          this.dialogRef.close(true);
+        } else {
+          this.router.navigate(['/notas']);
+        }
+      },
       error: err => {
-        this.erro = err.error?.mensagem || 'Erro ao emitir nota fiscal';
+        this.erro = err.mensagem || 'Erro ao emitir nota fiscal';
         this.salvando = false;
       },
     });

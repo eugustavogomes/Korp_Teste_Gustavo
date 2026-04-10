@@ -1,8 +1,8 @@
 <div class="page-header">
   <h2>Notas Fiscais</h2>
-  <a mat-raised-button color="primary" routerLink="/notas/nova">
+  <button mat-raised-button color="primary" (click)="abrirNova()">
     <mat-icon>add</mat-icon> Nova Nota
-  </a>
+  </button>
 </div>
 
 @if (erro) {
@@ -16,9 +16,7 @@
     <table mat-table [dataSource]="notas" style="width: 100%">
       <ng-container matColumnDef="numero">
         <th mat-header-cell *matHeaderCellDef>Número</th>
-        <td mat-cell *matCellDef="let n">
-          <strong>{{ n.numero }}</strong>
-        </td>
+        <td mat-cell *matCellDef="let n"><strong>{{ n.numero }}</strong></td>
       </ng-container>
 
       <ng-container matColumnDef="dataEmissao">
