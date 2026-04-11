@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AsyncPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -18,16 +18,14 @@ import { FormNota } from '../form-nota/form-nota';
   styleUrl: './lista-notas.scss',
 })
 export class ListaNotas {
+  private notaService = inject(NotaFiscalService);
+  private dialogService = inject(DialogService);
+
   readonly notas$ = this.notaService.notas$;
   readonly carregando$ = this.notaService.carregando$;
   readonly erroCarregamento$ = this.notaService.erro$;
   erro: string | null = null;
   StatusNotaFiscal = StatusNotaFiscal;
-
-  constructor(
-    private notaService: NotaFiscalService,
-    private dialogService: DialogService,
-  ) {}
 
   recarregar(): void {
     this.notaService.carregar();

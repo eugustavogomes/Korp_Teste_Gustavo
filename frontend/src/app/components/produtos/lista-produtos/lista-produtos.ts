@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -16,15 +16,13 @@ import { FormProduto } from '../form-produto/form-produto';
   styleUrl: './lista-produtos.scss',
 })
 export class ListaProdutos {
+  private produtoService = inject(ProdutoService);
+  private dialogService = inject(DialogService);
+
   readonly produtos$ = this.produtoService.produtos$;
   readonly carregando$ = this.produtoService.carregando$;
   readonly erroCarregamento$ = this.produtoService.erro$;
   erro: string | null = null;
-
-  constructor(
-    private produtoService: ProdutoService,
-    private dialogService: DialogService,
-  ) {}
 
   abrirNovo(): void {
     this.erro = null;
