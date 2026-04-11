@@ -61,9 +61,8 @@
         <td colspan="5">
           @if (erroCarregamento$ | async; as erroMsg) {
             <div class="empty-state empty-state--error">
-              <i class="pi pi-exclamation-triangle" style="opacity:0.4"></i>
+              <i class="pi pi-file"></i>
               <p>{{ erroMsg }}</p>
-              <p-button label="Tentar novamente" icon="pi pi-refresh" [text]="true" (onClick)="recarregar()" />
             </div>
           } @else if (!((carregando$ | async))) {
             <div class="empty-state">

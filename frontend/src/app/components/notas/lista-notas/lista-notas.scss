@@ -18,8 +18,15 @@
   i { font-size: 40px; opacity: 0.4; }
   p { margin: 0; font-size: $font-size-sm; }
 
+  &__label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+  }
+
   &--error {
-    color: $color-error;
-    i { opacity: 0.5; color: $color-text-secondary; }
+    i { opacity: 0.25; }
   }
 }
