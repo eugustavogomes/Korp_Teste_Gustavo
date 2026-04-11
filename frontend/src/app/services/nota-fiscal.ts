@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { timeout, tap } from 'rxjs/operators';
 import { NotaFiscal } from '../models/nota-fiscal.model';
 import { API_ENDPOINTS } from '../core/api-endpoints';
@@ -11,23 +11,18 @@ const REQUEST_TIMEOUT_MS = 8000;
 export class NotaFiscalService {
   private readonly api = API_ENDPOINTS.notasFiscais;
 
-  private _notas = new BehaviorSubject<NotaFiscal[]>([]);
-  readonly notas$ = this._notas.asObservable();
-
-  private _carregando = new BehaviorSubject<boolean>(false);
-  readonly carregando$ = this._carregando.asObservable();
-
-  private _erro = new BehaviorSubject<string | null>(null);
-  readonly erro$ = this._erro.asObservable();
+  readonly notas      = signal<NotaFiscal[]>([]);
+  readonly carregando = signal(false);
+  readonly erro       = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
   carregar(): void {
-    this._carregando.next(true);
-    this._erro.next(null);
+    this.carregando.set(true);
+    this.erro.set(null);
     this.http.get<NotaFiscal[]>(this.api.base).pipe(timeout(REQUEST_TIMEOUT_MS)).subscribe({
-      next: n => { this._notas.next(n); this._carregando.next(false); },
-      error: () => { this._erro.next('Não foi possível carregar as notas fiscais.'); this._carregando.next(false); },
+      next: n => { this.notas.set(n); this.carregando.set(false); },
+      error: () => { this.erro.set('Não foi possível carregar as notas fiscais.'); this.carregando.set(false); },
     });
   }
 

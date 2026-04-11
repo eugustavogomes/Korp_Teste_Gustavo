@@ -10,7 +10,7 @@
 }
 
 <p-card>
-  <p-table [value]="(produtos$ | async) ?? []" [tableStyle]="{'width':'100%'}" [loading]="(carregando$ | async) ?? false">
+  <p-table [value]="produtos()" [tableStyle]="{'width':'100%'}" [loading]="carregando()">
 
     <ng-template #header>
       <tr>
@@ -38,13 +38,12 @@
     <ng-template #emptymessage>
       <tr>
         <td colspan="4">
-          @if (erroCarregamento$ | async; as erroMsg) {
+          @if (erroCarregamento(); as erroMsg) {
             <div class="empty-state empty-state--error">
               <i class="pi pi-wifi" style="opacity:0.4"></i>
               <p>{{ erroMsg }}</p>
-              <p-button label="Tentar novamente" icon="pi pi-refresh" [text]="true" (onClick)="recarregar()" />
             </div>
-          } @else if (!((carregando$ | async))) {
+          } @else if (!carregando()) {
             <div class="empty-state">
               <i class="pi pi-box"></i>
               <p>Nenhum produto cadastrado.</p>

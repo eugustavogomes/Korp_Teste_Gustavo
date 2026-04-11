@@ -1,8 +1,7 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-import { Subscription } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -25,33 +24,25 @@ interface ItemForm {
   templateUrl: './form-nota.html',
   styleUrl: './form-nota.scss',
 })
-export class FormNota implements OnInit, OnDestroy {
-  private ref = inject<DynamicDialogRef>(DynamicDialogRef, { optional: true });
+export class FormNota implements OnInit {
+  private ref            = inject<DynamicDialogRef>(DynamicDialogRef, { optional: true });
   private produtoService = inject(ProdutoService);
-  private notaService = inject(NotaFiscalService);
-  private router = inject(Router);
+  private notaService    = inject(NotaFiscalService);
+  private router         = inject(Router);
 
-  private sub = new Subscription();
+  readonly produtos = this.produtoService.produtos;
 
-  produtos: Produto[] = [];
   itens: ItemForm[] = [];
-  colunas = ['descricao', 'quantidade', 'precoUnitario', 'subtotal', 'remover'];
-
   produtoSelecionado: Produto | null = null;
   quantidade = 1;
   precoUnitario = 0;
-
   salvando = false;
   erro: string | null = null;
 
   ngOnInit(): void {
-    this.sub.add(
-      this.produtoService.produtos$.subscribe(p => (this.produtos = p))
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    if (this.produtos().length === 0) {
+      this.produtoService.carregar();
+    }
   }
 
   get total(): number {

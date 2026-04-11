@@ -10,7 +10,7 @@
 }
 
 <p-card>
-  <p-table [value]="(notas$ | async) ?? []" [tableStyle]="{'width':'100%'}" [loading]="(carregando$ | async) ?? false">
+  <p-table [value]="notas()" [tableStyle]="{'width':'100%'}" [loading]="carregando()">
 
     <ng-template #header>
       <tr>
@@ -59,12 +59,13 @@
     <ng-template #emptymessage>
       <tr>
         <td colspan="5">
-          @if (erroCarregamento$ | async; as erroMsg) {
+          @if (erroCarregamento(); as erroMsg) {
             <div class="empty-state empty-state--error">
               <i class="pi pi-file"></i>
+              <p class="empty-state__label">Erro ao carregar</p>
               <p>{{ erroMsg }}</p>
             </div>
-          } @else if (!((carregando$ | async))) {
+          } @else if (!carregando()) {
             <div class="empty-state">
               <i class="pi pi-file-edit"></i>
               <p>Nenhuma nota emitida.</p>

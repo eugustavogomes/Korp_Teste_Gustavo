@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe, DatePipe, DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -13,23 +13,20 @@ import { FormNota } from '../form-nota/form-nota';
 
 @Component({
   selector: 'app-lista-notas',
-  imports: [AsyncPipe, RouterLink, DatePipe, DecimalPipe, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule],
   templateUrl: './lista-notas.html',
   styleUrl: './lista-notas.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaNotas {
-  private notaService = inject(NotaFiscalService);
+  private notaService   = inject(NotaFiscalService);
   private dialogService = inject(DialogService);
 
-  readonly notas$ = this.notaService.notas$;
-  readonly carregando$ = this.notaService.carregando$;
-  readonly erroCarregamento$ = this.notaService.erro$;
+  readonly notas        = this.notaService.notas;
+  readonly carregando   = this.notaService.carregando;
+  readonly erroCarregamento = this.notaService.erro;
   erro: string | null = null;
   StatusNotaFiscal = StatusNotaFiscal;
-
-  recarregar(): void {
-    this.notaService.carregar();
-  }
 
   abrirNova(): void {
     this.erro = null;

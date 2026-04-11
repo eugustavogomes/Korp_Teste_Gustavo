@@ -1,5 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -11,17 +10,18 @@ import { FormProduto } from '../form-produto/form-produto';
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [AsyncPipe, TableModule, ButtonModule, CardModule, TooltipModule, DynamicDialogModule],
+  imports: [TableModule, ButtonModule, CardModule, TooltipModule, DynamicDialogModule],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaProdutos {
   private produtoService = inject(ProdutoService);
-  private dialogService = inject(DialogService);
+  private dialogService  = inject(DialogService);
 
-  readonly produtos$ = this.produtoService.produtos$;
-  readonly carregando$ = this.produtoService.carregando$;
-  readonly erroCarregamento$ = this.produtoService.erro$;
+  readonly produtos   = this.produtoService.produtos;
+  readonly carregando = this.produtoService.carregando;
+  readonly erroCarregamento = this.produtoService.erro;
   erro: string | null = null;
 
   abrirNovo(): void {
@@ -47,10 +47,6 @@ export class ListaProdutos {
     ref!.onClose.subscribe((salvo: boolean) => {
       if (salvo) this.produtoService.carregar();
     });
-  }
-
-  recarregar(): void {
-    this.produtoService.carregar();
   }
 
   excluir(id: number): void {

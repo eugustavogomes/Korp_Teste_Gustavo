@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { timeout, tap } from 'rxjs/operators';
 import { Produto } from '../models/produto.model';
 import { API_ENDPOINTS } from '../core/api-endpoints';
@@ -11,23 +11,18 @@ const REQUEST_TIMEOUT_MS = 8000;
 export class ProdutoService {
   private readonly api = API_ENDPOINTS.produtos;
 
-  private _produtos = new BehaviorSubject<Produto[]>([]);
-  readonly produtos$ = this._produtos.asObservable();
-
-  private _carregando = new BehaviorSubject<boolean>(false);
-  readonly carregando$ = this._carregando.asObservable();
-
-  private _erro = new BehaviorSubject<string | null>(null);
-  readonly erro$ = this._erro.asObservable();
+  readonly produtos  = signal<Produto[]>([]);
+  readonly carregando = signal(false);
+  readonly erro       = signal<string | null>(null);
 
   constructor(private http: HttpClient) {}
 
   carregar(): void {
-    this._carregando.next(true);
-    this._erro.next(null);
+    this.carregando.set(true);
+    this.erro.set(null);
     this.http.get<Produto[]>(this.api.base).pipe(timeout(REQUEST_TIMEOUT_MS)).subscribe({
-      next: p => { this._produtos.next(p); this._carregando.next(false); },
-      error: () => { this._erro.next('Não foi possível carregar os produtos.'); this._carregando.next(false); },
+      next: p => { this.produtos.set(p); this.carregando.set(false); },
+      error: () => { this.erro.set('Não foi possível carregar os produtos.'); this.carregando.set(false); },
     });
   }
 

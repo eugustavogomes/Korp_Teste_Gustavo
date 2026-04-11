@@ -41,7 +41,7 @@ public class NotaFiscalService : INotaFiscalService
 
         var notaFiscal = new NotaFiscal
         {
-            Numero = $"NF-{DateTime.UtcNow:yyyyMMddHHmmssfff}",
+            Numero = string.Empty,
             DataEmissao = DateTime.UtcNow,
             Status = StatusNotaFiscal.Aberta,
             Total = itens.Sum(i => i.Subtotal),
@@ -49,6 +49,9 @@ public class NotaFiscalService : INotaFiscalService
         };
 
         await _repository.AddAsync(notaFiscal);
+        await _repository.SaveChangesAsync();
+
+        notaFiscal.Numero = $"NF-{notaFiscal.Id:D6}";
         await _repository.SaveChangesAsync();
 
         _logger.LogInformation("Nota fiscal {Numero} criada com status Aberta. Total: {Total}", notaFiscal.Numero, notaFiscal.Total);

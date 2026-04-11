@@ -13,7 +13,6 @@ public class FaturamentoDbContext : DbContext
         modelBuilder.Entity<NotaFiscal>(entity =>
         {
             entity.HasKey(n => n.Id);
-            entity.HasIndex(n => n.Numero).IsUnique();
             entity.Property(n => n.Numero).IsRequired().HasMaxLength(50);
             entity.Property(n => n.Total).HasPrecision(18, 2);
         });
