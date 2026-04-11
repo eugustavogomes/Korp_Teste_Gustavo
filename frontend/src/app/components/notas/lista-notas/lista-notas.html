@@ -9,8 +9,8 @@
   </div>
 }
 
-<p-card >
-  <p-table [value]="notas" [tableStyle]="{'width':'100%'}" [loading]="carregando">
+<p-card>
+  <p-table [value]="(notas$ | async) ?? []" [tableStyle]="{'width':'100%'}" [loading]="(carregando$ | async) ?? false">
 
     <ng-template #header>
       <tr>
@@ -22,7 +22,7 @@
       </tr>
     </ng-template>
 
-    <ng-template #body let-n >
+    <ng-template #body let-n>
       <tr>
         <td><strong>{{ n.numero }}</strong></td>
         <td>{{ n.dataEmissao | date: 'dd/MM/yyyy HH:mm' }}</td>
@@ -59,13 +59,13 @@
     <ng-template #emptymessage>
       <tr>
         <td colspan="5">
-          @if (erroCarregamento) {
+          @if (erroCarregamento$ | async; as erroMsg) {
             <div class="empty-state empty-state--error">
               <i class="pi pi-exclamation-triangle" style="opacity:0.4"></i>
-              <p>{{ erroCarregamento }}</p>
-              <p-button label="Tentar novamente" icon="pi pi-refresh" [text]="true" (onClick)="carregar()" />
+              <p>{{ erroMsg }}</p>
+              <p-button label="Tentar novamente" icon="pi pi-refresh" [text]="true" (onClick)="recarregar()" />
             </div>
-          } @else if (!carregando) {
+          } @else if (!((carregando$ | async))) {
             <div class="empty-state">
               <i class="pi pi-file-edit"></i>
               <p>Nenhuma nota emitida.</p>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -10,33 +11,20 @@ import { FormProduto } from '../form-produto/form-produto';
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [TableModule, ButtonModule, CardModule, TooltipModule, DynamicDialogModule],
+  imports: [AsyncPipe, TableModule, ButtonModule, CardModule, TooltipModule, DynamicDialogModule],
   templateUrl: './lista-produtos.html',
   styleUrl: './lista-produtos.scss',
 })
-export class ListaProdutos implements OnInit {
-  produtos: Produto[] = [];
-  carregando = false;
-  erroCarregamento: string | null = null;
+export class ListaProdutos {
+  readonly produtos$ = this.produtoService.produtos$;
+  readonly carregando$ = this.produtoService.carregando$;
+  readonly erroCarregamento$ = this.produtoService.erro$;
   erro: string | null = null;
 
   constructor(
     private produtoService: ProdutoService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {}
-
-  ngOnInit(): void {
-    this.carregar();
-  }
-
-  carregar(): void {
-    this.carregando = true;
-    this.erroCarregamento = null;
-    this.produtoService.listarProdutos().subscribe({
-      next: p => { this.produtos = p; this.carregando = false; },
-      error: () => { this.erroCarregamento = 'Não foi possível carregar os produtos.'; this.carregando = false; },
-    });
-  }
 
   abrirNovo(): void {
     this.erro = null;
@@ -46,7 +34,7 @@ export class ListaProdutos implements OnInit {
       modal: true,
     });
     ref!.onClose.subscribe((salvo: boolean) => {
-      if (salvo) this.carregar();
+      if (salvo) this.produtoService.carregar();
     });
   }
 
@@ -59,15 +47,18 @@ export class ListaProdutos implements OnInit {
       data: { id: produto.id },
     });
     ref!.onClose.subscribe((salvo: boolean) => {
-      if (salvo) this.carregar();
+      if (salvo) this.produtoService.carregar();
     });
+  }
+
+  recarregar(): void {
+    this.produtoService.carregar();
   }
 
   excluir(id: number): void {
     if (!confirm('Deseja excluir este produto?')) return;
     this.erro = null;
     this.produtoService.excluirProduto(id).subscribe({
-      next: () => this.carregar(),
       error: () => (this.erro = 'Erro ao excluir produto'),
     });
   }

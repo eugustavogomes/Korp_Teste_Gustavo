@@ -1,22 +1,34 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { TimeoutError } from 'rxjs';
 
 export interface ApiError {
   mensagem: string;
-  tipo: 'servico_indisponivel' | 'negocio' | 'servidor' | 'rede';
+  tipo: 'servico_indisponivel' | 'negocio' | 'servidor' | 'rede' | 'timeout';
 }
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
+    catchError((error: unknown) => {
       const apiError = mapearErro(error);
       return throwError(() => apiError);
     })
   );
 };
 
-function mapearErro(error: HttpErrorResponse): ApiError {
+function mapearErro(error: unknown): ApiError {
+  if (error instanceof TimeoutError) {
+    return {
+      mensagem: 'O servidor demorou demais para responder. Verifique se o backend está em execução.',
+      tipo: 'timeout',
+    };
+  }
+
+  if (!(error instanceof HttpErrorResponse)) {
+    return { mensagem: 'Ocorreu um erro inesperado.', tipo: 'servidor' };
+  }
+
   if (error.status === 0) {
     return {
       mensagem: 'Não foi possível conectar ao servidor. Verifique sua conexão.',
