@@ -3,8 +3,8 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres123
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: estoque_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -23,7 +23,7 @@ services:
       - "5189:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=estoque_db;Username=postgres;Password=postgres123"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=estoque_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -34,7 +34,7 @@ services:
       - "5002:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=faturamento_db;Username=postgres;Password=postgres123"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=faturamento_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       EstoqueService__BaseUrl: "http://estoque-service"
     depends_on:
       postgres:
