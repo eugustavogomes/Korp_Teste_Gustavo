@@ -51,6 +51,10 @@
         <span class="info-label">Data de Emissão</span>
         <span class="info-value">{{ nota.dataEmissao | date: 'dd/MM/yyyy HH:mm' }}</span>
       </div>
+      <div class="info-item">
+        <span class="info-label">Valor Total</span>
+        <span class="info-value">R$ {{ nota.total | number: '1.2-2' }}</span>
+      </div>
     </div>
   </p-card>
 

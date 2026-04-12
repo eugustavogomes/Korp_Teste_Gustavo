@@ -41,9 +41,8 @@
 }
 
 .nota-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-lg;
+  display: flex;
+  justify-content: space-between;
   padding: $spacing-lg;
 }
 
