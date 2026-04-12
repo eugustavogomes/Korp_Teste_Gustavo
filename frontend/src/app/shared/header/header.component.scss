@@ -8,7 +8,7 @@
   height: $header-height;
   background: $color-background;
   border-bottom: 1px solid $color-border;
-  box-shadow: $shadow-2;
+  box-shadow: $shadow-1;
   z-index: 1030;
 }
 
@@ -22,54 +22,67 @@
   align-items: center;
 }
 
+// =============================================================================
+// LOGO
+// =============================================================================
+
 .logo {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
   text-decoration: none;
-  color: $color-primary;
-  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  font-weight: $font-weight-bold;
   font-size: $font-size-md;
+  letter-spacing: -0.3px;
   flex-shrink: 0;
+  transition: opacity $transition-base;
 
   i {
-    font-size: 20px;
+    font-size: 18px;
+    color: $color-primary;
   }
+
+  &:hover { opacity: 0.75; }
 }
+
+// =============================================================================
+// NAV — pill switcher estilo segmented control
+// =============================================================================
 
 .header-nav {
   display: flex;
   align-items: center;
-  gap: $spacing-xs;
+  gap: 2px;
   grid-column: 2;
+  background: $color-surface-variant;
+  border-radius: $radius-xl;
+  padding: 3px;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
   gap: $spacing-xs;
-  padding: $spacing-xs $spacing-md;
+  padding: 6px $spacing-md;
   color: $color-text-secondary;
   text-decoration: none;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
-  border-radius: $radius-sm;
-  transition: color 0.2s, background 0.2s;
+  border-radius: $radius-lg;
+  transition: color $transition-base, background $transition-base, box-shadow $transition-base;
+  white-space: nowrap;
 
-  i { font-size: 15px; }
+  i { font-size: 14px; }
 
   &:hover {
-    color: $color-primary;
-    background: rgba(#1E40AF, 0.06);
+    color: $color-text-primary;
   }
 
   &.nav-active {
     color: $color-primary;
-    background: rgba(#1E40AF, 0.1);
+    background: $color-background;
     font-weight: $font-weight-semibold;
+    box-shadow: $shadow-1;
   }
-}
-
-.user-menu {
-  justify-self: end;
 }

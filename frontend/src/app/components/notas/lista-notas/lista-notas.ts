@@ -7,24 +7,28 @@ import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { NotaFiscalService } from '../../../services/nota-fiscal';
 import { StatusNotaFiscal } from '../../../models/nota-fiscal.model';
 import { FormNota } from '../form-nota/form-nota';
 
 @Component({
   selector: 'app-lista-notas',
-  imports: [RouterLink, DatePipe, DecimalPipe, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './lista-notas.html',
   styleUrl: './lista-notas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaNotas {
-  private notaService   = inject(NotaFiscalService);
-  private dialogService = inject(DialogService);
+  private notaService         = inject(NotaFiscalService);
+  private dialogService       = inject(DialogService);
+  private confirmationService = inject(ConfirmationService);
 
-  readonly notas        = this.notaService.notas;
-  readonly carregando   = this.notaService.carregando;
-  readonly erroCarregamento = this.notaService.erro;
+  readonly notas             = this.notaService.notas;
+  readonly carregando        = this.notaService.carregando;
+  readonly erroCarregamento  = this.notaService.erro;
   erro: string | null = null;
   StatusNotaFiscal = StatusNotaFiscal;
 
@@ -42,10 +46,20 @@ export class ListaNotas {
   }
 
   cancelar(id: number): void {
-    if (!confirm('Deseja cancelar esta nota fiscal?')) return;
-    this.erro = null;
-    this.notaService.cancelarNota(id).subscribe({
-      error: () => (this.erro = 'Erro ao cancelar nota fiscal'),
+    this.confirmationService.confirm({
+      message: 'Tem certeza que deseja cancelar esta nota fiscal? Esta ação não pode ser desfeita.',
+      header: 'Confirmar cancelamento',
+      icon: 'pi pi-times-circle',
+      acceptLabel: 'Cancelar nota',
+      rejectLabel: 'Voltar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-outlined p-button-secondary',
+      accept: () => {
+        this.erro = null;
+        this.notaService.cancelarNota(id).subscribe({
+          error: () => (this.erro = 'Erro ao cancelar nota fiscal'),
+        });
+      },
     });
   }
 

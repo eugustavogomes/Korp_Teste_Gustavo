@@ -39,6 +39,7 @@ body {
   border-radius: $radius-lg !important;
   box-shadow: $shadow-2 !important;
   border: 1px solid $color-border !important;
+  overflow: hidden !important; 
 }
 
 .p-card .p-card-body {
@@ -83,6 +84,11 @@ body {
   white-space: nowrap;
 }
 
+// Dialog — base
+.p-dialog {
+  overflow: hidden !important; // recorta header/footer nas quinas arredondadas
+}
+
 .p-dialog .p-dialog-header {
   background: $color-background !important;
   border-bottom: 1px solid $color-border !important;
@@ -101,6 +107,30 @@ body {
   background: $color-background !important;
   border-top: 1px solid $color-border !important;
   padding: $spacing-md $spacing-lg !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: $spacing-sm !important;
+}
+
+// Confirm Dialog — layout do conteúdo (ícone + mensagem)
+.p-confirmdialog .p-dialog-content {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: $spacing-md !important;
+  padding: $spacing-lg !important;
+
+  .p-confirmdialog-icon {
+    font-size: 28px !important;
+    color: $color-error !important;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .p-confirmdialog-message {
+    font-size: $font-size-sm !important;
+    color: $color-text-primary !important;
+    line-height: 1.6 !important;
+  }
 }
 
 .p-inputtext,
