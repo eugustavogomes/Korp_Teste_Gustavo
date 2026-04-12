@@ -17,6 +17,7 @@
 <p-card>
   <p-table #dt [value]="produtos()" [tableStyle]="{'width':'100%'}" [loading]="carregando()"
            sortMode="single" (onSort)="onSort($event)"
+           sortField="id" [sortOrder]="-1"
            [paginator]="true" [rows]="10">
 
     <ng-template #header>
