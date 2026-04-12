@@ -1,4 +1,5 @@
 using EstoqueService.Data;
+using EstoqueService.HealthChecks;
 using EstoqueService.Repositories;
 using EstoqueService.Repositories.Interfaces;
 using EstoqueService.Services;
@@ -6,8 +7,11 @@ using EstoqueService.Services.Interfaces;
 using EstoqueService.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using System.Text.Json;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -32,6 +36,9 @@ try
 
     builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
     builder.Services.AddScoped<IProdutoService, ProdutoService>();
+
+    builder.Services.AddHealthChecks()
+        .AddCheck<DatabaseHealthCheck>("database", tags: ["ready"]);
 
     builder.Services.AddCors(options =>
     {
@@ -59,6 +66,26 @@ try
     app.UseCors("SecurePolicy");
     app.UseHttpsRedirection();
     app.MapControllers();
+
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+            var result = JsonSerializer.Serialize(new
+            {
+                status = report.Status.ToString(),
+                checks = report.Entries.Select(e => new
+                {
+                    name = e.Key,
+                    status = e.Value.Status.ToString(),
+                    description = e.Value.Description,
+                }),
+            });
+            await context.Response.WriteAsync(result);
+        },
+    });
+
     app.Run();
 }
 catch (Exception ex)

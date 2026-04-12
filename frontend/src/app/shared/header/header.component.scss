@@ -76,6 +76,21 @@
   padding: 3px;
 }
 
+.header-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $spacing-xs;
+}
+
+.status-label {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-right: $spacing-sm;
+
+  &:last-child { margin-right: 0; }
+}
+
 .nav-link {
   display: flex;
   align-items: center;

@@ -17,5 +17,16 @@
       </a>
     </nav>
 
+    <div class="header-status">
+      <app-status-indicator
+        [status]="health.estoqueStatus()"
+        [label]="'Estoque: ' + health.estoqueStatus()" />
+      <span class="status-label">Estoque</span>
+      <app-status-indicator
+        [status]="health.faturamentoStatus()"
+        [label]="'Faturamento: ' + health.faturamentoStatus()" />
+      <span class="status-label">Faturamento</span>
+    </div>
+
   </div>
 </header>

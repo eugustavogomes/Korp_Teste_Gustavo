@@ -18,6 +18,7 @@ public class EstoqueDbContext : DbContext
             entity.HasIndex(p => p.Codigo).IsUnique();
             entity.Property(p => p.Codigo).IsRequired().HasMaxLength(50);
             entity.Property(p => p.Descricao).IsRequired().HasMaxLength(200);
+            entity.UseXminAsConcurrencyToken();
         });
     }
 }

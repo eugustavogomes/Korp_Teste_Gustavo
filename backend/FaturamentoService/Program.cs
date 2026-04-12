@@ -1,4 +1,5 @@
 using FaturamentoService.Data;
+using FaturamentoService.HealthChecks;
 using FaturamentoService.Repositories;
 using FaturamentoService.Repositories.Interfaces;
 using FaturamentoService.Services;
@@ -6,10 +7,13 @@ using FaturamentoService.Services.Interfaces;
 using FaturamentoService.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Polly;
 using Polly.Extensions.Http;
 using Serilog;
+using System.Text.Json;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -58,6 +62,12 @@ try
     builder.Services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
     builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
 
+    builder.Services.AddHttpClient("HealthCheck");
+
+    builder.Services.AddHealthChecks()
+        .AddCheck<DatabaseHealthCheck>("database", tags: ["ready"])
+        .AddCheck<EstoqueServiceHealthCheck>("estoque-service", tags: ["ready"]);
+
     builder.Services.AddHttpClient<IEstoqueClient, EstoqueClient>(client =>
     {
         client.BaseAddress = new Uri(
@@ -93,6 +103,26 @@ try
     app.UseCors("SecurePolicy");
     app.UseHttpsRedirection();
     app.MapControllers();
+
+    app.MapHealthChecks("/health", new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+            var result = JsonSerializer.Serialize(new
+            {
+                status = report.Status.ToString(),
+                checks = report.Entries.Select(e => new
+                {
+                    name = e.Key,
+                    status = e.Value.Status.ToString(),
+                    description = e.Value.Description,
+                }),
+            });
+            await context.Response.WriteAsync(result);
+        },
+    });
+
     app.Run();
 }
 catch (Exception ex)
