@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
+import { Table } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TagModule } from 'primeng/tag';
@@ -22,6 +23,8 @@ import { FormNota } from '../form-nota/form-nota.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaNotas {
+  @ViewChild('dt') table!: Table;
+
   private notaService         = inject(NotaFiscalService);
   private dialogService       = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
@@ -31,6 +34,17 @@ export class ListaNotas {
   readonly erroCarregamento  = this.notaService.erro;
   erro: string | null = null;
   StatusNotaFiscal = StatusNotaFiscal;
+
+  private _lastSort: { field: string; order: number } | null = null;
+
+  onSort(event: { field: string; order: number }): void {
+    if (this._lastSort?.field === event.field && this._lastSort.order === -1 && event.order === 1) {
+      this._lastSort = null;
+      setTimeout(() => this.table.reset());
+    } else {
+      this._lastSort = { field: event.field, order: event.order };
+    }
+  }
 
   abrirNova(): void {
     this.erro = null;

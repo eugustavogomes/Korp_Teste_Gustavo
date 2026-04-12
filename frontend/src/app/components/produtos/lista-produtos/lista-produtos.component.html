@@ -15,13 +15,20 @@
 }
 
 <p-card>
-  <p-table [value]="produtos()" [tableStyle]="{'width':'100%'}" [loading]="carregando()">
+  <p-table #dt [value]="produtos()" [tableStyle]="{'width':'100%'}" [loading]="carregando()"
+           sortMode="single" (onSort)="onSort($event)">
 
     <ng-template #header>
       <tr>
-        <th>Código</th>
-        <th>Descrição</th>
-        <th class="text-center">Saldo</th>
+        <th pSortableColumn="codigo">
+          Código <p-sortIcon field="codigo" />
+        </th>
+        <th pSortableColumn="descricao">
+          Descrição <p-sortIcon field="descricao" />
+        </th>
+        <th class="text-center" pSortableColumn="saldo">
+          Saldo <p-sortIcon field="saldo" />
+        </th>
         <th>Ações</th>
       </tr>
     </ng-template>

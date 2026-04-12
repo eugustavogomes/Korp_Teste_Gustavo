@@ -15,15 +15,24 @@
 }
 
 <p-card>
-  <p-table [value]="notas()" [tableStyle]="{'width':'100%'}" [loading]="carregando()">
+  <p-table #dt [value]="notas()" [tableStyle]="{'width':'100%'}" [loading]="carregando()"
+           sortMode="single" (onSort)="onSort($event)">
 
     <ng-template #header>
       <tr>
-        <th>Número</th>
-        <th>Data Emissão</th>
+        <th pSortableColumn="numero">
+          Número <p-sortIcon field="numero" />
+        </th>
+        <th pSortableColumn="dataEmissao">
+          Data Emissão <p-sortIcon field="dataEmissao" />
+        </th>
         <th>Produtos</th>
-        <th>Status</th>
-        <th>Total</th>
+        <th pSortableColumn="status">
+          Status <p-sortIcon field="status" />
+        </th>
+        <th pSortableColumn="total">
+          Total <p-sortIcon field="total" />
+        </th>
         <th>Ações</th>
       </tr>
     </ng-template>
@@ -31,7 +40,12 @@
     <ng-template #body let-n>
       <tr>
         <td><strong>{{ n.numero }}</strong></td>
-        <td>{{ n.dataEmissao | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td>
+          <div class="data-emissao">
+            <span>{{ n.dataEmissao | date: 'dd/MM/yyyy' }}</span>
+            <span class="data-emissao__hora">{{ n.dataEmissao | date: 'HH:mm' }}</span>
+          </div>
+        </td>
         <td>
           <div class="itens-badges">
             @for (item of n.itens; track item.id) {

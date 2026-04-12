@@ -39,6 +39,27 @@
   white-space: nowrap !important;
 }
 
+.p-datatable .p-sortable-column {
+  .p-datatable-column-header-content {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .p-datatable-sort-icon {
+    width: 11px !important;
+    height: 11px !important;
+    opacity: 0.4;
+    transition: opacity 150ms ease !important;
+    flex-shrink: 0 !important;
+  }
+
+  &.p-datatable-column-sorted .p-datatable-sort-icon,
+  &:hover .p-datatable-sort-icon {
+    opacity: 1 !important;
+  }
+}
+
 .p-datatable .p-datatable-tbody > tr {
   transition: background-color 150ms ease !important;
   vertical-align: middle !important;

@@ -1,6 +1,18 @@
 @use '../../../../styles/variables' as *;
 
 
+.data-emissao {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.3;
+
+  &__hora {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+}
+
 .itens-badges {
   display: flex;
   flex-wrap: wrap;

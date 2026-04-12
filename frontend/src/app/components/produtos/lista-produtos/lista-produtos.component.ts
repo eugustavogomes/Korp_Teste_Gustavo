@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core';
 import { TableModule } from 'primeng/table';
+import { Table } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
@@ -19,6 +20,8 @@ import { FormProduto } from '../form-produto/form-produto.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListaProdutos {
+  @ViewChild('dt') table!: Table;
+
   private produtoService      = inject(ProdutoService);
   private dialogService       = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
@@ -27,6 +30,17 @@ export class ListaProdutos {
   readonly carregando        = this.produtoService.carregando;
   readonly erroCarregamento  = this.produtoService.erro;
   erro: string | null = null;
+
+  private _lastSort: { field: string; order: number } | null = null;
+
+  onSort(event: { field: string; order: number }): void {
+    if (this._lastSort?.field === event.field && this._lastSort.order === -1 && event.order === 1) {
+      this._lastSort = null;
+      setTimeout(() => this.table.reset());
+    } else {
+      this._lastSort = { field: event.field, order: event.order };
+    }
+  }
 
   abrirNovo(): void {
     this.erro = null;
