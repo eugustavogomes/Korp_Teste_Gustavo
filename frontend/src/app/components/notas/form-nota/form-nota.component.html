@@ -16,6 +16,7 @@
       class="field-produto"
       [filter]="true"
       filterBy="descricao,codigo"
+      appendTo="body"
     >
       <ng-template #selectedItem let-p>
         <span><strong>{{ p.codigo }}</strong> — {{ p.descricao }}</span>
