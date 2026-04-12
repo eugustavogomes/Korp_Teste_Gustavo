@@ -18,7 +18,8 @@
   <p-table #dt [value]="notas()" [tableStyle]="{'width':'100%'}" [loading]="carregando()"
            sortMode="single" (onSort)="onSort($event)"
            sortField="dataEmissao" [sortOrder]="-1"
-           [paginator]="true" [rows]="10">
+           [paginator]="true" [rows]="10"
+           [scrollable]="true" scrollHeight="flex">
 
     <ng-template #header>
       <tr>
