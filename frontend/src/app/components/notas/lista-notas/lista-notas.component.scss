@@ -22,6 +22,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: $spacing-xs;
+  max-width: 360px;
 }
 
 .item-badge {
