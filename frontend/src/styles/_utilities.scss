@@ -24,8 +24,7 @@ $spacing-map: (
   .mx-#{$key} { margin-left: $value !important; margin-right: $value !important; }
   .my-#{$key} { margin-top: $value !important; margin-bottom: $value !important; }
 
-  // Padding — todos os lados
-  .p-#{$key}  { padding: $value !important; }
+  .pad-#{$key}  { padding: $value !important; }
   .pt-#{$key} { padding-top: $value !important; }
   .pr-#{$key} { padding-right: $value !important; }
   .pb-#{$key} { padding-bottom: $value !important; }
@@ -37,8 +36,8 @@ $spacing-map: (
   .gap-#{$key} { gap: $value !important; }
 }
 
-.m-0  { margin: 0 !important; }
-.p-0  { padding: 0 !important; }
+.m-0   { margin: 0 !important; }
+.pad-0 { padding: 0 !important; }
 .mx-auto { margin-left: auto !important; margin-right: auto !important; }
 
 

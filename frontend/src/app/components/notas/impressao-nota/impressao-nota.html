@@ -41,22 +41,20 @@
     </div>
   </div>
 
-  <p-card styleClass="mb-lg">
-    <div class="nota-info-grid">
-      <div class="info-item">
-        <span class="info-label">Número</span>
-        <span class="info-value">{{ nota.numero }}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Data de Emissão</span>
-        <span class="info-value">{{ nota.dataEmissao | date: 'dd/MM/yyyy HH:mm' }}</span>
-      </div>
-      <div class="info-item">
-        <span class="info-label">Valor Total</span>
-        <span class="info-value">R$ {{ nota.total | number: '1.2-2' }}</span>
-      </div>
+  <div class="nota-info-grid mb-lg">
+    <div class="info-item">
+      <span class="info-label">Número</span>
+      <span class="info-value">{{ nota.numero }}</span>
     </div>
-  </p-card>
+    <div class="info-item">
+      <span class="info-label">Data de Emissão</span>
+      <span class="info-value">{{ nota.dataEmissao | date: 'dd/MM/yyyy HH:mm' }}</span>
+    </div>
+    <div class="info-item info-item--total">
+      <span class="info-label">Valor Total</span>
+      <span class="info-value info-value--total">R$ {{ nota.total | number: '1.2-2' }}</span>
+    </div>
+  </div>
 
   <p-card>
     <div class="card-title">Itens da Nota</div>

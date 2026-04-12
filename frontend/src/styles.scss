@@ -6,7 +6,6 @@
 @use './styles/typography';
 @use './styles/components';
 @use './styles/layout';
-@use './styles/animations';
 @use './styles/utilities';
 
 
@@ -29,111 +28,6 @@ body {
   height: 100%;
 }
 
-
-// =============================================================================
-// PRIMENG — Overrides pontuais com variáveis do design system
-// =============================================================================
-
-// Card
-.p-card {
-  border-radius: $radius-lg !important;
-  box-shadow: $shadow-2 !important;
-  border: 1px solid $color-border !important;
-  overflow: hidden !important; 
-}
-
-.p-card .p-card-body {
-  padding: 0 !important;
-}
-
-.p-datatable .p-datatable-thead > tr > th {
-  background: $color-surface-variant !important;
-  font-weight: $font-weight-semibold !important;
-  color: $color-text-secondary !important;
-  font-size: $font-size-xs !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid $color-border !important;
-  padding: $spacing-sm $spacing-md !important;
-  white-space: nowrap;
-}
-
-.p-datatable .p-datatable-tbody > tr {
-  transition: background-color $transition-base !important;
-}
-
-.p-datatable .p-datatable-tbody > tr > td {
-  padding: $spacing-sm $spacing-md !important;
-  font-size: $font-size-sm !important;
-  color: $color-text-primary !important;
-  border-bottom: 1px solid $color-surface-variant !important;
-  vertical-align: middle;
-}
-
-.p-datatable .p-datatable-tbody > tr:hover > td {
-  background: $color-primary-lighter;
-}
-
-.p-datatable .p-datatable-tbody > tr:last-child > td {
-  border-bottom: none !important;
-}
-
-.p-datatable .p-datatable-thead > tr > th:last-child,
-.p-datatable .p-datatable-tbody > tr > td:last-child {
-  width: 1%;
-  white-space: nowrap;
-}
-
-// Dialog — base
-.p-dialog {
-  overflow: hidden !important; // recorta header/footer nas quinas arredondadas
-}
-
-.p-dialog .p-dialog-header {
-  background: $color-background !important;
-  border-bottom: 1px solid $color-border !important;
-  padding: $spacing-md $spacing-lg !important;
-  font-weight: $font-weight-semibold !important;
-  font-size: $font-size-md !important;
-  color: $color-text-primary !important;
-}
-
-.p-dialog .p-dialog-content {
-  background: $color-background !important;
-  padding: $spacing-lg !important;
-}
-
-.p-dialog .p-dialog-footer {
-  background: $color-background !important;
-  border-top: 1px solid $color-border !important;
-  padding: $spacing-md $spacing-lg !important;
-  display: flex !important;
-  justify-content: flex-end !important;
-  gap: $spacing-sm !important;
-}
-
-.p-confirmdialog .p-dialog-content {
-  padding: $spacing-lg $spacing-lg $spacing-md !important;
-
-  .p-confirmdialog-message {
-    font-size: $font-size-sm !important;
-    color: $color-text-secondary !important;
-    line-height: 1.7 !important;
-    display: block;
-  }
-}
-
-.p-inputtext,
-.p-select {
-  font-size: $font-size-sm !important;
-}
-
-.p-inputnumber {
-  display: flex ;
-  width: 100% ;
-
-  .p-inputtext { width: 100% !important; }
-}
 
 // =============================================================================
 // ERROR MESSAGE

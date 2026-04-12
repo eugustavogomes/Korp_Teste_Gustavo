@@ -6,7 +6,8 @@
   left: 0;
   right: 0;
   height: $header-height;
-  background: $color-background;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid $color-border;
   box-shadow: $shadow-1;
   z-index: 1030;
@@ -21,6 +22,7 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
+
 
 // =============================================================================
 // LOGO
@@ -46,6 +48,7 @@
   &:hover { opacity: 0.75; }
 }
 
+
 // =============================================================================
 // NAV — pill switcher estilo segmented control
 // =============================================================================
@@ -56,6 +59,7 @@
   gap: 2px;
   grid-column: 2;
   background: $color-surface-variant;
+  border: 1px solid $color-border;
   border-radius: $radius-xl;
   padding: 3px;
 }
@@ -68,7 +72,7 @@
   color: $color-text-secondary;
   text-decoration: none;
   font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
+  font-weight: $font-weight-semibold; // fixo para evitar layout shift ao alternar
   border-radius: $radius-lg;
   transition: color $transition-base, background $transition-base, box-shadow $transition-base;
   white-space: nowrap;
@@ -82,7 +86,6 @@
   &.nav-active {
     color: $color-primary;
     background: $color-background;
-    font-weight: $font-weight-semibold;
     box-shadow: $shadow-1;
   }
 }

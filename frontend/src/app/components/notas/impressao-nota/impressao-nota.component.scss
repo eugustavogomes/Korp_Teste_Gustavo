@@ -43,20 +43,34 @@
 .nota-info-grid {
   display: flex;
   justify-content: space-between;
-  padding: $spacing-lg;
+  padding: $spacing-lg $spacing-xl;
+  background: $color-background;
+  border: 1px solid $color-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-1;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
+  gap: 4px;
+  flex: 1;
+
+  & + & {
+    padding-left: $spacing-xl;
+    border-left: 1px solid $color-border;
+  }
+
+  &--total {
+    align-items: flex-end;
+  }
 }
 
 .info-label {
-  font-size: $font-size-xs;
+  font-size: 10px;
   font-weight: $font-weight-semibold;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: $color-text-secondary;
 }
 
@@ -64,6 +78,12 @@
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
+
+  &--total {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary;
+  }
 }
 
 .card-title {
@@ -88,6 +108,8 @@
     color: $color-text-secondary;
     background: $color-surface-variant;
     border-bottom: 1px solid $color-border;
+    position: sticky;
+    top: 0;
   }
 
   td {
@@ -109,7 +131,7 @@
   }
 
   .total-value {
-    font-size: $font-size-lg;
+    font-size: $font-size-xl;
     font-weight: $font-weight-bold;
     color: $color-primary;
   }

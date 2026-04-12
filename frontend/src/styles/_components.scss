@@ -1,3 +1,184 @@
-// Este arquivo é reservado para overrides de componentes PrimeNG
-// que não cabem em styles.scss por serem muito específicos.
-// Overrides globais do PrimeNG estão em src/styles.scss.
+@use 'variables' as *;
+
+
+// =============================================================================
+// CARD
+// =============================================================================
+
+.p-card {
+  border-radius: $radius-lg !important;
+  box-shadow: $shadow-2 !important;
+  border: 1px solid $color-border !important;
+  overflow: hidden !important;
+}
+
+.p-card .p-card-body {
+  padding: 0 !important;
+}
+
+.p-card .p-card-header {
+  padding: $spacing-md $spacing-lg !important;
+  border-bottom: 1px solid $color-border !important;
+  font-weight: $font-weight-semibold !important;
+}
+
+
+// =============================================================================
+// DATATABLE
+// =============================================================================
+
+.p-datatable .p-datatable-thead > tr > th {
+  background: $color-surface-variant !important;
+  font-weight: $font-weight-semibold !important;
+  color: $color-text-secondary !important;
+  font-size: 11px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  border-bottom: 1px solid $color-border !important;
+  padding: 10px 16px !important;
+  white-space: nowrap !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  transition: background-color 150ms ease !important;
+  vertical-align: middle !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  color: $color-text-primary !important;
+  border-bottom: 1px solid $color-surface-variant !important;
+  vertical-align: middle !important;
+  min-height: 48px !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover > td {
+  background: $color-primary-lighter !important;
+  transition: background-color 150ms ease !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th:last-child,
+.p-datatable .p-datatable-tbody > tr > td:last-child {
+  width: 1% !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+}
+
+.p-datatable-loading-overlay {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+
+// =============================================================================
+// DIALOG
+// =============================================================================
+
+.p-dialog {
+  overflow: hidden !important;
+}
+
+.p-dialog .p-dialog-header {
+  background: $color-background !important;
+  border-bottom: 1px solid $color-border !important;
+  padding: $spacing-md $spacing-lg !important;
+  font-weight: $font-weight-semibold !important;
+  font-size: $font-size-md !important;
+  color: $color-text-primary !important;
+}
+
+.p-dialog .p-dialog-content {
+  background: $color-background !important;
+  padding: $spacing-lg !important;
+}
+
+.p-dialog .p-dialog-footer {
+  background: $color-background !important;
+  border-top: 1px solid $color-border !important;
+  padding: $spacing-md $spacing-lg !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: $spacing-sm !important;
+}
+
+.p-confirmdialog .p-dialog-content {
+  padding: $spacing-lg $spacing-lg $spacing-md !important;
+
+  .p-confirmdialog-message {
+    font-size: $font-size-sm !important;
+    color: $color-text-secondary !important;
+    line-height: 1.7 !important;
+    display: block !important;
+  }
+}
+
+
+// =============================================================================
+// INPUTS & SELECT
+// =============================================================================
+
+.p-inputtext,
+.p-select {
+  font-size: 14px !important;
+  border-radius: $radius-md !important;
+  padding: 8px 12px !important;
+  border: 1px solid $color-border !important;
+  transition: border-color 150ms ease !important;
+}
+
+.p-inputtext:focus {
+  border-color: $color-primary !important;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12) !important;
+  outline: none !important;
+}
+
+.p-inputnumber {
+  display: flex !important;
+  width: 100% !important;
+
+  .p-inputtext { width: 100% !important; }
+}
+
+
+// =============================================================================
+// BUTTONS
+// =============================================================================
+
+.p-button {
+  font-size: 13px !important;
+  font-weight: $font-weight-semibold !important;
+  border-radius: $radius-md !important;
+  transition: all 150ms ease !important;
+  letter-spacing: 0.01em !important;
+}
+
+.p-button:not(.p-button-text):not(.p-button-outlined) {
+  box-shadow: $shadow-1 !important;
+
+  &:hover {
+    box-shadow: none !important;
+  }
+}
+
+.p-button-sm {
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+}
+
+
+// =============================================================================
+// TAG / BADGE
+// =============================================================================
+
+.p-tag {
+  font-size: 11px !important;
+  font-weight: $font-weight-semibold !important;
+  padding: 3px 8px !important;
+  border-radius: $radius-xl !important;
+  letter-spacing: 0.03em !important;
+}

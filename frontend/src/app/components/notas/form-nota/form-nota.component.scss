@@ -1,5 +1,7 @@
 @use '../../../../styles/variables' as *;
 
+// .dialog-footer está centralizado em _layout.scss.
+
 .section-label {
   margin: 0 0 $spacing-sm;
   font-size: $font-size-xs;
@@ -33,7 +35,7 @@
 
 .item-row {
   display: flex;
-  align-items: flex-end; // botão alinha na base dos campos
+  align-items: flex-end;
   gap: $spacing-sm;
 }
 
@@ -54,7 +56,7 @@
 .btn-add {
   flex-shrink: 0;
   white-space: nowrap;
-  padding-bottom: 1px; // ajuste óptico para alinhar com a base dos inputs
+  padding-bottom: 1px;
 }
 
 .select-option {
@@ -84,13 +86,4 @@
   color: $color-text-secondary;
   font-size: $font-size-sm;
   margin: $spacing-md 0;
-}
-
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-sm;
-  padding-top: $spacing-lg;
-  margin-top: $spacing-md;
-  border-top: 1px solid $color-border;
 }

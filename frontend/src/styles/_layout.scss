@@ -22,14 +22,30 @@ $breakpoint-desktop: 1024px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-lg;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: $spacing-xl;
+}
+
+.page-header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 
   h2 {
     margin: 0;
     font-size: $font-size-xl;
     font-weight: $font-weight-semibold;
     color: $color-text-primary;
+    letter-spacing: -0.3px;
   }
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-regular;
 }
 
 
@@ -42,22 +58,40 @@ $breakpoint-desktop: 1024px;
   flex-direction: column;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-xxl $spacing-lg;
+  padding: $spacing-xl $spacing-lg;
   color: $color-text-secondary;
 
   i {
-    font-size: 2rem;
+    font-size: 2.5rem;
     opacity: 0.35;
   }
 
   p {
     margin: 0;
     font-size: $font-size-sm;
+    letter-spacing: 0.01em;
   }
 
   &--error {
     color: $color-error;
+    background: #FEF2F2;
+    border-radius: $radius-md;
+    padding: $spacing-lg;
 
     i { opacity: 0.5; }
   }
+}
+
+
+// =============================================================================
+// DIALOG FOOTER — Rodapé de ações em formulários/modais
+// =============================================================================
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-sm;
+  padding-top: $spacing-md;
+  margin-top: $spacing-md;
+  border-top: 1px solid $color-border;
 }
