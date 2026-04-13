@@ -5,6 +5,7 @@ import { Table } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
 import { DynamicDialogModule, DialogService } from 'primeng/dynamicdialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -15,7 +16,7 @@ import { FormProduto } from '../form-produto/form-produto.component';
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [DecimalPipe, TableModule, ButtonModule, CardModule, TooltipModule, DynamicDialogModule, ConfirmDialogModule],
+  imports: [DecimalPipe, TableModule, ButtonModule, CardModule, TooltipModule, DialogModule, DynamicDialogModule, ConfirmDialogModule],
   providers: [ConfirmationService],
   templateUrl: './lista-produtos.component.html',
   styleUrl: './lista-produtos.component.scss',
@@ -33,12 +34,13 @@ export class ListaProdutos implements OnInit {
   readonly carregando        = this.produtoService.carregando;
   readonly erroCarregamento  = this.produtoService.erro;
   erro: string | null = null;
+  mostrarRanking = false;
 
   get kpiTotal()      { return this.produtos().length; }
   get kpiSemEstoque() { return this.produtos().filter(p => p.saldo === 0).length; }
   get kpiCritico()    { return this.produtos().filter(p => p.saldo > 0 && p.saldo <= 5).length; }
 
-  get kpiTopProdutos(): { descricao: string; quantidade: number }[] {
+  private get _rankingCompleto(): { descricao: string; quantidade: number }[] {
     const map = new Map<number, { descricao: string; quantidade: number }>();
     for (const nota of this.notaService.notas()) {
       for (const item of nota.itens) {
@@ -46,8 +48,11 @@ export class ListaProdutos implements OnInit {
         map.set(item.produtoId, { descricao: item.descricao, quantidade: cur.quantidade + item.quantidade });
       }
     }
-    return [...map.values()].sort((a, b) => b.quantidade - a.quantidade).slice(0, 3);
+    return [...map.values()].sort((a, b) => b.quantidade - a.quantidade);
   }
+
+  get kpiTopProdutos()     { return this._rankingCompleto.slice(0, 3); }
+  get kpiRankingCompleto() { return this._rankingCompleto; }
 
   private _lastSort: { field: string; order: number } | null = null;
 

@@ -51,25 +51,44 @@
       <div class="kpi-card__icon kpi-card__icon--blue">
         <i class="pi pi-chart-bar"></i>
       </div>
-      <div class="kpi-card__body">
-        <span class="kpi-card__label">Top Produtos Vendidos</span>
-      </div>
+      <span class="kpi-card__label">Top Produtos Vendidos</span>
     </div>
     @if (kpiTopProdutos.length > 0) {
       <div class="kpi-ranking-list">
         @for (p of kpiTopProdutos; track p.descricao; let i = $index) {
           <div class="kpi-ranking-item">
             <span [class]="'kpi-ranking-item__pos kpi-ranking-item__pos--' + (i + 1)">{{ i + 1 }}</span>
-            <span class="kpi-ranking-item__name">{{ p.descricao }}</span>
-            <span class="kpi-ranking-item__qty">{{ p.quantidade }} un.</span>
+            <span class="kpi-ranking-item__name">{{ p.descricao }} <span class="kpi-ranking-item__qty">({{ p.quantidade }} un.)</span></span>
           </div>
         }
       </div>
+      <button class="ranking-link" (click)="mostrarRanking = true">
+        Ver todos <i class="pi pi-arrow-right"></i>
+      </button>
     } @else {
       <span class="kpi-card__sub">Nenhuma venda registrada</span>
     }
   </div>
 </div>
+
+<p-dialog
+  header="Ranking completo de vendas"
+  [(visible)]="mostrarRanking"
+  [modal]="true"
+  [dismissableMask]="true"
+  [closable]="true"
+  styleClass="ranking-dialog"
+>
+  <div class="ranking-modal-list">
+    @for (p of kpiRankingCompleto; track p.descricao; let i = $index) {
+      <div class="ranking-modal-item">
+        <span [class]="i < 3 ? 'ranking-modal-item__pos ranking-modal-item__pos--top' : 'ranking-modal-item__pos'">{{ i + 1 }}</span>
+        <span class="ranking-modal-item__name">{{ p.descricao }}</span>
+        <span class="ranking-modal-item__qty">{{ p.quantidade }} un.</span>
+      </div>
+    }
+  </div>
+</p-dialog>
 
 <p-card>
   <p-table #dt [value]="produtos()" [tableStyle]="{'width':'100%'}" [loading]="carregando()"
