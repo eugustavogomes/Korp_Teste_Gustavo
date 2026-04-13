@@ -17,6 +17,7 @@ Sistema de gerenciamento de notas fiscais com arquitetura de microsserviços, de
 - [Como Executar](#como-executar)
   - [Com Docker (recomendado)](#com-docker-recomendado)
   - [Sem Docker (manual)](#sem-docker-manual)
+- [Configuração de Variáveis de Ambiente](#configuração-de-variáveis-de-ambiente)
 - [Funcionalidades](#funcionalidades)
 - [Detalhamento Técnico](#detalhamento-técnico)
 
