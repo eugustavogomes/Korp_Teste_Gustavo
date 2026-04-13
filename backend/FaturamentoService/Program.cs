@@ -61,6 +61,7 @@ try
 
     builder.Services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
     builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
+    builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
     builder.Services.AddHttpClient("HealthCheck");
 

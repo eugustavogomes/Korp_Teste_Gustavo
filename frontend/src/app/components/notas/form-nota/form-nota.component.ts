@@ -6,11 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { TextareaModule } from 'primeng/textarea';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ProdutoService } from '../../../services/produto.service';
 import { NotaFiscalService } from '../../../services/nota-fiscal.service';
+import { InsightsService } from '../../../services/insights.service';
 import { Produto } from '../../../models/produto.model';
 
 interface ItemForm {
@@ -21,17 +23,18 @@ interface ItemForm {
 
 @Component({
   selector: 'app-form-nota',
-  imports: [FormsModule, DecimalPipe, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TableModule, TooltipModule],
+  imports: [FormsModule, DecimalPipe, ButtonModule, SelectModule, InputNumberModule, InputTextModule, TextareaModule, TableModule, TooltipModule],
   templateUrl: './form-nota.component.html',
   styleUrl: './form-nota.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormNota implements OnInit {
-  private ref            = inject<DynamicDialogRef>(DynamicDialogRef, { optional: true });
-  private produtoService = inject(ProdutoService);
-  private notaService    = inject(NotaFiscalService);
-  private router         = inject(Router);
-  private cdr            = inject(ChangeDetectorRef);
+  private ref             = inject<DynamicDialogRef>(DynamicDialogRef, { optional: true });
+  private produtoService  = inject(ProdutoService);
+  private notaService     = inject(NotaFiscalService);
+  private insightsService = inject(InsightsService);
+  private router          = inject(Router);
+  private cdr             = inject(ChangeDetectorRef);
 
   readonly produtos = this.produtoService.produtos;
 
@@ -42,6 +45,20 @@ export class FormNota implements OnInit {
   precoDisplay = '';
   salvando = false;
   erro: string | null = null;
+
+  textoPedido = '';
+  interpretando = false;
+  avisoIA: string | null = null;
+  iaBloqueadaAte: number | null = null;
+
+  get iaEmCooldown(): boolean {
+    return this.iaBloqueadaAte !== null && Date.now() < this.iaBloqueadaAte;
+  }
+
+  get iaCooldownSegundos(): number {
+    if (!this.iaBloqueadaAte) return 0;
+    return Math.ceil((this.iaBloqueadaAte - Date.now()) / 1000);
+  }
 
   ngOnInit(): void {
     this.produtoService.carregar();
@@ -108,6 +125,52 @@ export class FormNota implements OnInit {
 
   removerItem(index: number): void {
     this.itens = this.itens.filter((_, i) => i !== index);
+  }
+
+  interpretarPedido(): void {
+    if (!this.textoPedido.trim()) return;
+    this.interpretando = true;
+    this.avisoIA = null;
+    this.erro = null;
+
+    this.insightsService.interpretarPedido(this.textoPedido, this.produtos()).subscribe({
+      next: resultado => {
+        for (const item of resultado.itens) {
+          const produto = this.produtos().find(p => p.id === item.produtoId);
+          if (!produto) continue;
+
+          const jaAdicionado = this.itens
+            .filter(i => i.produto.id === produto.id)
+            .reduce((s, i) => s + i.quantidade, 0);
+
+          const quantidadeValida = Math.min(item.quantidade, produto.saldoDisponivel - jaAdicionado);
+          if (quantidadeValida <= 0) continue;
+
+          this.itens = [
+            ...this.itens,
+            { produto, quantidade: quantidadeValida, precoUnitario: item.precoUnitario },
+          ];
+        }
+
+        if (resultado.naoEncontrados.length > 0) {
+          this.avisoIA = `Não encontrado no catálogo: ${resultado.naoEncontrados.join(', ')}`;
+        }
+
+        this.textoPedido = '';
+        this.interpretando = false;
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        if (err.tipo === 'negocio' && err.mensagem?.includes('Limite')) {
+          this.iaBloqueadaAte = Date.now() + 60_000;
+          this.erro = `${err.mensagem} (disponível em ${this.iaCooldownSegundos}s)`;
+        } else {
+          this.erro = err.mensagem || 'Erro ao interpretar o pedido. Tente novamente.';
+        }
+        this.interpretando = false;
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   cancelar(): void {

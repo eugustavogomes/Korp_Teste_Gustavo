@@ -43,6 +43,13 @@ function mapearErro(error: unknown): ApiError {
     };
   }
 
+  if (error.status === 429) {
+    return {
+      mensagem: error.error?.mensagem ?? 'Muitas requisições. Aguarde alguns segundos e tente novamente.',
+      tipo: 'negocio',
+    };
+  }
+
   if (error.status === 400 || error.status === 422) {
     return {
       mensagem: error.error?.mensagem ?? 'Requisição inválida.',

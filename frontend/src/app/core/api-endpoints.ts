@@ -20,4 +20,7 @@ export const API_ENDPOINTS = {
     imprimir: (id: number) => `${faturamento}/api/notas-fiscais/${id}/imprimir`,
     cancelar: (id: number) => `${faturamento}/api/notas-fiscais/${id}/cancelar`,
   },
+  insights: {
+    interpretarPedido: `${faturamento}/api/insights/interpretar-pedido`,
+  },
 } as const;

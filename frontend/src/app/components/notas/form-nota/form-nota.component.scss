@@ -1,6 +1,63 @@
 @use '../../../../styles/variables' as *;
 
 // =============================================================================
+// SEÇÃO IA
+// =============================================================================
+
+.ia-section {
+  background: linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%);
+  border: 1px solid #C7D2FE;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #4338CA;
+
+    i { font-size: 0.85rem; }
+  }
+
+  &__body {
+    display: flex;
+    gap: $spacing-sm;
+    align-items: flex-end;
+
+    p-button { flex-shrink: 0; }
+  }
+}
+
+.ia-textarea {
+  flex: 1;
+  resize: none;
+  font-size: $font-size-sm;
+  border-color: #C7D2FE;
+
+  &:focus {
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+}
+
+.ia-aviso {
+  margin-top: $spacing-sm;
+  font-size: $font-size-xs;
+  color: #B45309;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+
+  i { font-size: 0.8rem; }
+}
+
+// =============================================================================
 // SEÇÕES
 // =============================================================================
 

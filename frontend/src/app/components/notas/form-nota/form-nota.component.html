@@ -1,3 +1,33 @@
+<div class="ia-section">
+  <div class="ia-section__header">
+    <i class="pi pi-sparkles"></i>
+    <span>Descreva o pedido em linguagem natural</span>
+  </div>
+  <div class="ia-section__body">
+    <textarea
+      pTextarea
+      [(ngModel)]="textoPedido"
+      placeholder='Ex: "5 parafusos phillips a R$2,50 e 1 chave de fenda a R$15"'
+      rows="2"
+      class="ia-textarea"
+      [disabled]="interpretando"
+    ></textarea>
+    <p-button
+      [label]="iaEmCooldown ? 'Aguarde ' + iaCooldownSegundos + 's' : 'Interpretar'"
+      icon="pi pi-sparkles"
+      [loading]="interpretando"
+      [disabled]="!textoPedido.trim() || interpretando || iaEmCooldown"
+      (onClick)="interpretarPedido()"
+      severity="secondary"
+    />
+  </div>
+  @if (avisoIA) {
+    <div class="ia-aviso">
+      <i class="pi pi-exclamation-triangle"></i> {{ avisoIA }}
+    </div>
+  }
+</div>
+
 @if (erro) {
   <div class="error-message mb-md">
     <i class="pi pi-exclamation-circle"></i> {{ erro }}
