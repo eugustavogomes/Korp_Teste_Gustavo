@@ -36,6 +36,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=faturamento_db;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       EstoqueService__BaseUrl: "http://estoque-service"
+      Gemini__ApiKey: ${GEMINI_API_KEY}
+      Gemini__Model: "gemini-flash-latest"
     depends_on:
       postgres:
         condition: service_healthy
