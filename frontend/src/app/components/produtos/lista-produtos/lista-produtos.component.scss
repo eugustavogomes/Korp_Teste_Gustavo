@@ -37,6 +37,17 @@ p-card {
     overflow: hidden;
     padding: 0;
   }
+
+  tr:has(.empty-state) {
+    td {
+      height: 500px;
+      vertical-align: middle;
+    }
+
+    &:hover > td {
+      background: transparent !important;
+    }
+  }
 }
 
 
