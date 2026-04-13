@@ -2,6 +2,11 @@
 
 Sistema de gerenciamento de notas fiscais com arquitetura de microsserviços, desenvolvido com Angular no frontend e ASP.NET Core no backend.
 
+<p align="center">
+	<img src="Frontend/src/public/telanotafiscal.png" width="420" />
+	<img src="Frontend/src/public/telaproduto.png" width="420" />
+</p>
+
 ---
 
 ## Sumário
