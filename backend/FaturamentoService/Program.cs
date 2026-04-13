@@ -101,7 +101,6 @@ try
     }
 
     app.UseCors("SecurePolicy");
-    app.UseHttpsRedirection();
     app.MapControllers();
 
     app.MapHealthChecks("/health", new HealthCheckOptions
