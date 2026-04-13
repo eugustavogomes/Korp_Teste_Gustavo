@@ -16,7 +16,7 @@ import { FormNota } from '../form-nota/form-nota.component';
 
 @Component({
   selector: 'app-lista-notas',
-  imports: [RouterLink, DatePipe, DecimalPipe, NgClass, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule, ConfirmDialogModule],
+  imports: [RouterLink, DatePipe, DecimalPipe, TableModule, ButtonModule, CardModule, TagModule, TooltipModule, DynamicDialogModule, ConfirmDialogModule],
   providers: [ConfirmationService],
   templateUrl: './lista-notas.component.html',
   styleUrl: './lista-notas.component.scss',

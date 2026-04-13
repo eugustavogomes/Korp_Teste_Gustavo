@@ -49,9 +49,11 @@
   <div class="kpi-card kpi-card--ranking">
     <div class="kpi-card__header">
       <div class="kpi-card__icon kpi-card__icon--blue">
-        <i class="pi pi-chart-bar"></i>
+        <i class="pi pi-crown"></i>
       </div>
-      <span class="kpi-card__label">Top Produtos Vendidos</span>
+      <span class="kpi-card__label">Top Produtos Vendidos | <button class="ranking-link" (click)="mostrarRanking = true">
+        Ver todos <i class="pi pi-arrow-right"></i>
+      </button> </span>
     </div>
     @if (kpiTopProdutos.length > 0) {
       <div class="kpi-ranking-list">
@@ -62,9 +64,6 @@
           </div>
         }
       </div>
-      <button class="ranking-link" (click)="mostrarRanking = true">
-        Ver todos <i class="pi pi-arrow-right"></i>
-      </button>
     } @else {
       <span class="kpi-card__sub">Nenhuma venda registrada</span>
     }

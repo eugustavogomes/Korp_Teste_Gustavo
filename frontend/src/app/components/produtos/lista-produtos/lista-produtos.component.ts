@@ -16,7 +16,7 @@ import { FormProduto } from '../form-produto/form-produto.component';
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [DecimalPipe, TableModule, ButtonModule, CardModule, TooltipModule, DialogModule, DynamicDialogModule, ConfirmDialogModule],
+  imports: [TableModule, ButtonModule, CardModule, TooltipModule, DialogModule, DynamicDialogModule, ConfirmDialogModule],
   providers: [ConfirmationService],
   templateUrl: './lista-produtos.component.html',
   styleUrl: './lista-produtos.component.scss',
