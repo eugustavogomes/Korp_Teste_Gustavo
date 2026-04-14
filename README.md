@@ -111,18 +111,34 @@ git clone <url-do-repositorio>
 cd Korp_Teste_Gustavo
 ```
 
-**2. Suba todos os serviços**
+**2. Configure as variáveis de ambiente**
+
+Copie o arquivo de exemplo e preencha os valores:
+```bash
+cp .env.example .env
+```
+
+Edite o `.env` com suas credenciais:
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=sua_senha_aqui
+GEMINI_API_KEY=sua_chave_gemini_aqui
+```
+
+> Para obter uma chave da API Gemini, acesse [Google AI Studio](https://aistudio.google.com/app/apikey) e gere uma chave gratuita. A chave é necessária para a funcionalidade de interpretação de pedidos por linguagem natural.
+
+**3. Suba todos os serviços**
 ```bash
 docker-compose up --build
 ```
 
 > Na primeira execução o build pode levar alguns minutos. Nas próximas será mais rápido pois as imagens ficam em cache.
 
-**3. Aguarde todos os serviços estarem prontos**
+**4. Aguarde todos os serviços estarem prontos**
 
 O terminal mostrará os logs de cada serviço. Quando aparecer algo como `Now listening on: http://[::]:80` nos dois serviços de backend, a aplicação está pronta.
 
-**4. Acesse a aplicação**
+**5. Acesse a aplicação**
 
 | Serviço | URL |
 |---|---|
@@ -191,7 +207,7 @@ Abra um novo terminal:
 cd backend/FaturamentoService
 ```
 
-Configure a string de conexão e a URL do EstoqueService em `appsettings.json`:
+Configure a string de conexão, a URL do EstoqueService e a chave da API Gemini em `appsettings.json`:
 ```json
 {
   "ConnectionStrings": {
@@ -199,9 +215,15 @@ Configure a string de conexão e a URL do EstoqueService em `appsettings.json`:
   },
   "EstoqueService": {
     "BaseUrl": "http://localhost:5189"
+  },
+  "Gemini": {
+    "ApiKey": "SUA_CHAVE_GEMINI_AQUI",
+    "Model": "gemini-flash-latest"
   }
 }
 ```
+
+> A chave Gemini também pode ser fornecida via variável de ambiente `Gemini__ApiKey=sua_chave` antes de executar `dotnet run`.
 
 Execute as migrations e inicie o serviço:
 ```bash
@@ -229,12 +251,33 @@ A aplicação estará disponível em `http://localhost:4200`.
 
 ---
 
+## Configuração de Variáveis de Ambiente
+
+O arquivo `.env` (baseado em `.env.example`) é obrigatório para rodar com Docker. Para execução manual, os valores equivalentes devem estar no `appsettings.json` de cada serviço.
+
+| Variável | Descrição | Obrigatório |
+|---|---|---|
+| `POSTGRES_USER` | Usuário do PostgreSQL | Sim |
+| `POSTGRES_PASSWORD` | Senha do PostgreSQL | Sim |
+| `GEMINI_API_KEY` | Chave da API Google Gemini | Sim (para funcionalidade de IA) |
+
+**Como obter a chave Gemini:**
+1. Acesse [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Faça login com sua conta Google
+3. Clique em "Create API Key"
+4. Copie a chave gerada e cole em `GEMINI_API_KEY` no seu `.env`
+
+> Sem a chave Gemini, o sistema inicia normalmente mas a funcionalidade de **interpretação de pedidos por linguagem natural** ficará indisponível.
+
+---
+
 ## Funcionalidades
 
 - **Cadastro de Produtos** — código, descrição e saldo em estoque
 - **Cadastro de Notas Fiscais** — numeração sequencial, múltiplos produtos com quantidades e preços
 - **Impressão de Notas** — ao imprimir, a nota é fechada e o saldo dos produtos é debitado automaticamente
 - **Controle de Status** — notas abertas podem ser impressas; notas fechadas são somente leitura
+- **Interpretação por Linguagem Natural (Gemini AI)** — campo de texto livre para descrever um pedido em português; o sistema usa a API Gemini para identificar produtos e quantidades automaticamente
 - **Tratamento de Falhas** — retry automático e circuit breaker na comunicação entre microsserviços
 - **Feedback ao usuário** — indicadores de carregamento e mensagens de erro em todas as operações
 
