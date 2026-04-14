@@ -42,7 +42,8 @@
       <label class="field-label">Produto</label>
       <p-select
         [options]="produtos()"
-        [(ngModel)]="produtoSelecionado"
+        [ngModel]="produtoSelecionado"
+        (ngModelChange)="onProdutoChange($event)"
         optionLabel="descricao"
         placeholder="Buscar por código ou descrição..."
         class="field-produto"
@@ -86,9 +87,10 @@
       <div class="field-group field-qty">
         <label class="field-label">Quantidade</label>
         <p-inputnumber
-          [(ngModel)]="quantidade"
+          [ngModel]="quantidade"
+          (ngModelChange)="onQuantidadeChange($event)"
           [min]="1"
-          [max]="saldoRestante || 9999"
+          [max]="produtoSelecionado ? saldoRestante : 9999"
         />
       </div>
 
@@ -116,7 +118,7 @@
         label="Adicionar"
         icon="pi pi-plus"
         class="btn-add"
-        [disabled]="!produtoSelecionado || quantidade <= 0 || precoUnitario <= 0"
+        [disabled]="!produtoSelecionado || quantidade <= 0 || precoUnitario <= 0 || saldoRestante <= 0"
         (onClick)="adicionarItem()"
       />
     </div>

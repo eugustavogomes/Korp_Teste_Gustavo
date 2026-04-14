@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DecimalPipe } from '@angular/common';
+import { UpperCasePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { Table } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -17,7 +17,7 @@ import { FormProduto } from '../form-produto/form-produto.component';
 
 @Component({
   selector: 'app-lista-produtos',
-  imports: [TableModule, ButtonModule, CardModule, TooltipModule, DialogModule, DynamicDialogModule, ConfirmDialogModule],
+  imports: [TableModule, ButtonModule, CardModule, TooltipModule, DialogModule, DynamicDialogModule, ConfirmDialogModule, UpperCasePipe],
   providers: [ConfirmationService],
   templateUrl: './lista-produtos.component.html',
   styleUrl: './lista-produtos.component.scss',

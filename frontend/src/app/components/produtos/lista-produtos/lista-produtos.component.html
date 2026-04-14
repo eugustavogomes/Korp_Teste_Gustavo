@@ -127,9 +127,9 @@
 
     <ng-template #body let-p>
       <tr [class]="rowClass(p.saldoDisponivel)">
-        <td><code class="codigo-badge">{{ p.codigo }}</code></td>
+        <td><code class="codigo-badge">{{ p.codigo | uppercase }}</code></td>
         <td>
-          <div class="produto-descricao">{{ p.descricao }}</div>
+          <div class="produto-descricao">{{ p.descricao | uppercase }}</div>
         </td>
         <td class="text-center">
           <span class="saldo-fisico">{{ p.saldo }}</span>

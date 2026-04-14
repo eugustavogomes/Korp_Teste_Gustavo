@@ -79,7 +79,32 @@ export class FormNota implements OnInit {
     const jaAdicionado = this.itens
       .filter(i => i.produto.id === this.produtoSelecionado!.id)
       .reduce((s, i) => s + i.quantidade, 0);
-    return this.produtoSelecionado.saldoDisponivel - jaAdicionado;
+    return Math.max(0, (this.produtoSelecionado.saldoDisponivel ?? 0) - jaAdicionado);
+  }
+
+  onProdutoChange(produto: typeof this.produtoSelecionado): void {
+    this.produtoSelecionado = produto;
+    if (produto) {
+      const jaAdicionado = this.itens
+        .filter(i => i.produto.id === produto.id)
+        .reduce((s, i) => s + i.quantidade, 0);
+      const disponivel = Math.max(0, (produto.saldoDisponivel ?? 0) - jaAdicionado);
+      if (disponivel > 0 && this.quantidade > disponivel) {
+        this.quantidade = disponivel;
+      }
+    }
+    this.cdr.markForCheck();
+  }
+
+  onQuantidadeChange(valor: number | null): void {
+    const v = Math.max(1, valor ?? 1);
+    if (!this.produtoSelecionado) {
+      this.quantidade = v;
+      return;
+    }
+    const max = this.saldoRestante;
+    this.quantidade = max > 0 ? Math.min(v, max) : 1;
+    this.cdr.detectChanges();
   }
 
   onPrecoInput(event: Event): void {
@@ -97,7 +122,6 @@ export class FormNota implements OnInit {
       currency: 'BRL',
     });
     input.value = this.precoDisplay;
-    // mantém cursor no fim
     const len = input.value.length;
     input.setSelectionRange(len, len);
   }
@@ -109,16 +133,37 @@ export class FormNota implements OnInit {
       .filter(i => i.produto.id === this.produtoSelecionado!.id)
       .reduce((total, i) => total + i.quantidade, 0);
 
-    if (jaAdicionado + this.quantidade > this.produtoSelecionado.saldoDisponivel) {
-      this.erro = `Saldo insuficiente para "${this.produtoSelecionado.descricao}". Disponível: ${this.produtoSelecionado.saldoDisponivel - jaAdicionado}`;
+    const saldoDisponivel = this.produtoSelecionado.saldoDisponivel ?? 0;
+    const disponivel = Math.max(0, saldoDisponivel - jaAdicionado);
+
+    if (disponivel <= 0) {
+      this.erro = `Sem saldo disponível para "${this.produtoSelecionado.descricao}".`;
+      this.quantidade = 1;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    if (this.quantidade > disponivel) {
+      this.erro = `Quantidade inválida: apenas ${disponivel} unidade${disponivel === 1 ? '' : 's'} disponível${disponivel === 1 ? '' : 's'} para "${this.produtoSelecionado.descricao}".`;
+      this.quantidade = disponivel;
+      this.cdr.markForCheck();
       return;
     }
 
     this.erro = null;
-    this.itens = [
-      ...this.itens,
-      { produto: this.produtoSelecionado, quantidade: this.quantidade, precoUnitario: this.precoUnitario },
-    ];
+    const indiceExistente = this.itens.findIndex(i => i.produto.id === this.produtoSelecionado!.id);
+    if (indiceExistente >= 0) {
+      this.itens = this.itens.map((item, idx) =>
+        idx === indiceExistente
+          ? { ...item, quantidade: item.quantidade + this.quantidade, precoUnitario: this.precoUnitario }
+          : item
+      );
+    } else {
+      this.itens = [
+        ...this.itens,
+        { produto: this.produtoSelecionado, quantidade: this.quantidade, precoUnitario: this.precoUnitario },
+      ];
+    }
     this.produtoSelecionado = null;
     this.quantidade = 1;
     this.precoUnitario = 0;
@@ -148,10 +193,19 @@ export class FormNota implements OnInit {
           const quantidadeValida = Math.min(item.quantidade, produto.saldoDisponivel - jaAdicionado);
           if (quantidadeValida <= 0) continue;
 
-          this.itens = [
-            ...this.itens,
-            { produto, quantidade: quantidadeValida, precoUnitario: item.precoUnitario },
-          ];
+          const indiceExistente = this.itens.findIndex(i => i.produto.id === produto.id);
+          if (indiceExistente >= 0) {
+            this.itens = this.itens.map((entry, idx) =>
+              idx === indiceExistente
+                ? { ...entry, quantidade: entry.quantidade + quantidadeValida, precoUnitario: item.precoUnitario }
+                : entry
+            );
+          } else {
+            this.itens = [
+              ...this.itens,
+              { produto, quantidade: quantidadeValida, precoUnitario: item.precoUnitario },
+            ];
+          }
         }
 
         if (resultado.naoEncontrados.length > 0) {
@@ -197,6 +251,7 @@ export class FormNota implements OnInit {
     const ref = this.ref;
     this.notaService.criarNota(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
+        this.produtoService.carregar();
         if (ref) ref.close(true);
         else this.router.navigate(['/notas']);
       },

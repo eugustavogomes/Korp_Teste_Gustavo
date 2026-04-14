@@ -48,6 +48,21 @@ export class FormProduto implements OnInit {
   }
 
   salvar(): void {
+    this.produto.descricao = (this.produto.descricao ?? '').trim().toUpperCase();
+    this.produto.codigo    = (this.produto.codigo    ?? '').trim().toUpperCase();
+
+    const descricaoNorm = this.produto.descricao;
+    const idAtual = (this.produto as Produto).id;
+    const duplicado = this.produtoService.produtos().some(
+      p => p.descricao.toUpperCase() === descricaoNorm && p.id !== idAtual
+    );
+
+    if (duplicado) {
+      this.erro = `Já existe um produto com a descrição "${descricaoNorm}".`;
+      this.cdr.markForCheck();
+      return;
+    }
+
     this.salvando = true;
     this.erro = null;
     const op: Observable<unknown> = this.editando
