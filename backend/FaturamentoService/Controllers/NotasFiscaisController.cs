@@ -127,12 +127,22 @@ public class NotasFiscaisController : ControllerBase
         }
         catch (StatusInvalidoException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { mensagem = ex.Message });
+        }
+        catch (EstoqueException ex)
+        {
+            _logger.LogError("EstoqueService retornou {Status} ao cancelar nota {Id}: {Mensagem}", ex.StatusCode, id, ex.Message);
+            return StatusCode(503, new { mensagem = "EstoqueService indisponível. Tente novamente em instantes." });
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Falha de conexão com EstoqueService ao cancelar nota {Id}", id);
+            return StatusCode(503, new { mensagem = "EstoqueService indisponível. Tente novamente em instantes." });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao cancelar nota fiscal {Id}", id);
-            return StatusCode(500, "Erro interno do servidor");
+            return StatusCode(500, new { mensagem = "Erro interno do servidor." });
         }
     }
 }
