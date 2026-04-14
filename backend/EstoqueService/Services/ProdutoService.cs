@@ -59,6 +59,9 @@ public class ProdutoService : IProdutoService
         if (produto == null)
             throw new ProdutoNotFoundException(id);
 
+        if (produto.SaldoReservado > 0)
+            throw new ProdutoComReservaAtivaException(produto.Descricao, produto.SaldoReservado);
+
         _repository.Remove(produto);
         await _repository.SaveChangesAsync();
     }
@@ -104,7 +107,10 @@ public class ProdutoService : IProdutoService
                 var produto = await _repository.GetByIdAsync(item.ProdutoId);
 
                 if (produto == null)
-                    throw new ProdutoNotFoundException(item.ProdutoId);
+                {
+                    _logger.LogWarning("Produto {ProdutoId} não encontrado ao liberar reserva — pode ter sido excluído. Ignorando item.", item.ProdutoId);
+                    continue;
+                }
 
                 if (produto.SaldoReservado < item.Quantidade)
                     throw new ReservaInsuficienteException(produto.Descricao, produto.SaldoReservado, item.Quantidade);

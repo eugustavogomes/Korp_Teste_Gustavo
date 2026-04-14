@@ -85,6 +85,10 @@ public class ProdutosController : ControllerBase
         {
             return NotFound();
         }
+        catch (ProdutoComReservaAtivaException ex)
+        {
+            return Conflict(new { mensagem = ex.Message });
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao deletar produto {Id}", id);

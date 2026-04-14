@@ -144,7 +144,14 @@ export class ListaProdutos implements OnInit {
         this.erro = null;
         this.produtoService.excluirProduto(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => this.messageService.add({ severity: 'warn', summary: 'Produto excluído', detail: 'Produto removido do catálogo.' }),
-          error: () => (this.erro = 'Erro ao excluir produto'),
+          error: (err) => {
+            const mensagem = err?.error?.mensagem;
+            if (err?.status === 409 && mensagem) {
+              this.messageService.add({ severity: 'error', summary: 'Exclusão bloqueada', detail: mensagem, life: 6000 });
+            } else {
+              this.erro = 'Erro ao excluir produto';
+            }
+          },
         });
       },
     });
