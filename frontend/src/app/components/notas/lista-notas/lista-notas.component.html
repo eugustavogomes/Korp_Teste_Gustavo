@@ -59,7 +59,10 @@
     </div>
     <div class="kpi-card__body">
       <span class="kpi-card__label">Receita Total</span>
-      <span class="kpi-card__value">R$ {{ kpiReceita() | number: '1.2-2' }}</span>
+      <span class="kpi-card__value kpi-card__value--truncate"
+      [pTooltip]="'R$ ' + (kpiReceita() | number: '1.2-2')" tooltipPosition="top">
+  R$ {{ kpiReceita() | number: '1.2-2' }}
+</span>
     </div>
   </div>
 </div>

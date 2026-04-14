@@ -176,3 +176,16 @@
     outline-offset: -1px;
   }
 }
+.kpi-card__value--truncate {
+  display: inline-block;       
+  max-width: 160px;        
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+@media (max-width: 480px) {
+  .kpi-card__value--truncate {
+    max-width: 110px;
+  }
+}
