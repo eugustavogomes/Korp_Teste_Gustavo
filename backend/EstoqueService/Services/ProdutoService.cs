@@ -34,11 +34,14 @@ public class ProdutoService : IProdutoService
 
     public async Task UpdateAsync(int id, Produto produto)
     {
-        if (!await _repository.ExistsAsync(id))
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
             throw new ProdutoNotFoundException(id);
 
-        produto.DataAtualizacao = DateTime.UtcNow;
-        _repository.Update(produto);
+        existing.Codigo = produto.Codigo;
+        existing.Descricao = produto.Descricao;
+        existing.Saldo = produto.Saldo;
+        existing.DataAtualizacao = DateTime.UtcNow;
 
         try
         {

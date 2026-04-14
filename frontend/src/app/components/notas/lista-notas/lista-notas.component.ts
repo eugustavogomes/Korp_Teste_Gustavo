@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -28,6 +29,7 @@ export class ListaNotas {
   private notaService         = inject(NotaFiscalService);
   private dialogService       = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
+  private destroyRef          = inject(DestroyRef);
 
   readonly notas             = this.notaService.notas;
   readonly carregando        = this.notaService.carregando;
@@ -92,7 +94,7 @@ export class ListaNotas {
       closable: true,
       dismissableMask: true,
     });
-    ref!.onClose.subscribe((salvo: boolean) => {
+    ref!.onClose.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((salvo: boolean) => {
       if (salvo) this.notaService.carregar();
     });
   }
@@ -107,7 +109,7 @@ export class ListaNotas {
       rejectButtonStyleClass: 'p-button-outlined p-button-secondary',
       accept: () => {
         this.erro = null;
-        this.notaService.cancelarNota(id).subscribe({
+        this.notaService.cancelarNota(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           error: () => (this.erro = 'Erro ao cancelar nota fiscal'),
         });
       },

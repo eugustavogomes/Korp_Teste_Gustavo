@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -23,6 +24,7 @@ export class FormProduto implements OnInit {
   private router         = inject(Router);
   private produtoService = inject(ProdutoService);
   private cdr            = inject(ChangeDetectorRef);
+  private destroyRef     = inject(DestroyRef);
 
   produto: Partial<Produto> = { codigo: '', descricao: '', saldo: 0 };
   editando = false;
@@ -33,7 +35,7 @@ export class FormProduto implements OnInit {
     const id = this.config?.data?.id ?? this.route.snapshot.params['id'];
     if (id) {
       this.editando = true;
-      this.produtoService.buscarProduto(+id).subscribe({
+      this.produtoService.buscarProduto(+id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: p => { this.produto = p; this.cdr.markForCheck(); },
         error: () => { this.erro = 'Erro ao carregar produto'; this.cdr.markForCheck(); },
       });
@@ -53,7 +55,7 @@ export class FormProduto implements OnInit {
       : this.produtoService.cadastrarProduto(this.produto as Omit<Produto, 'id'>);
 
     const ref = this.ref;
-    op.subscribe({
+    op.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         if (ref) ref.close(true);
         else this.router.navigate(['/produtos']);

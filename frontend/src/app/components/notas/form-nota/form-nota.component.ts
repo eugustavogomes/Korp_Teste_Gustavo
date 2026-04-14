@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
@@ -35,6 +36,7 @@ export class FormNota implements OnInit {
   private insightsService = inject(InsightsService);
   private router          = inject(Router);
   private cdr             = inject(ChangeDetectorRef);
+  private destroyRef      = inject(DestroyRef);
 
   readonly produtos = this.produtoService.produtos;
 
@@ -133,7 +135,7 @@ export class FormNota implements OnInit {
     this.avisoIA = null;
     this.erro = null;
 
-    this.insightsService.interpretarPedido(this.textoPedido, this.produtos()).subscribe({
+    this.insightsService.interpretarPedido(this.textoPedido, this.produtos()).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: resultado => {
         for (const item of resultado.itens) {
           const produto = this.produtos().find(p => p.id === item.produtoId);
@@ -193,7 +195,7 @@ export class FormNota implements OnInit {
     };
 
     const ref = this.ref;
-    this.notaService.criarNota(request).subscribe({
+    this.notaService.criarNota(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         if (ref) ref.close(true);
         else this.router.navigate(['/notas']);

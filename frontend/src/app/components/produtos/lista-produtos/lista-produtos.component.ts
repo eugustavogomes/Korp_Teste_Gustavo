@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DecimalPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { Table } from 'primeng/table';
@@ -29,6 +30,7 @@ export class ListaProdutos implements OnInit {
   private notaService         = inject(NotaFiscalService);
   private dialogService       = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
+  private destroyRef          = inject(DestroyRef);
 
   readonly produtos          = this.produtoService.produtos;
   readonly carregando        = this.produtoService.carregando;
@@ -103,7 +105,7 @@ export class ListaProdutos implements OnInit {
       closable: true,
       dismissableMask: true,
     });
-    ref!.onClose.subscribe((salvo: boolean) => {
+    ref!.onClose.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((salvo: boolean) => {
       if (salvo) this.produtoService.carregar();
     });
   }
@@ -118,7 +120,7 @@ export class ListaProdutos implements OnInit {
       dismissableMask: true,
       data: { id: produto.id },
     });
-    ref!.onClose.subscribe((salvo: boolean) => {
+    ref!.onClose.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((salvo: boolean) => {
       if (salvo) this.produtoService.carregar();
     });
   }
@@ -133,7 +135,7 @@ export class ListaProdutos implements OnInit {
       rejectButtonStyleClass: 'p-button-outlined p-button-secondary',
       accept: () => {
         this.erro = null;
-        this.produtoService.excluirProduto(id).subscribe({
+        this.produtoService.excluirProduto(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           error: () => (this.erro = 'Erro ao excluir produto'),
         });
       },
