@@ -75,8 +75,8 @@ export class FormProduto implements OnInit {
         if (ref) ref.close(true);
         else this.router.navigate(['/produtos']);
       },
-      error: () => {
-        this.erro = 'Erro ao salvar produto';
+      error: (err) => {
+        this.erro = err?.mensagem || 'Erro ao salvar produto';
         this.salvando = false;
         this.cdr.markForCheck();
       },

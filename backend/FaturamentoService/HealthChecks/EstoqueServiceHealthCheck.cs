@@ -31,7 +31,7 @@ public class EstoqueServiceHealthCheck : IHealthCheck
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy("EstoqueService inacessível.", ex);
+            return HealthCheckResult.Degraded("EstoqueService inacessível.", ex);
         }
     }
 }

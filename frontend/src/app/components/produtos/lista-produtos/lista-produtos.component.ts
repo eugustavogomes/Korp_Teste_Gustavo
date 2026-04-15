@@ -145,12 +145,12 @@ export class ListaProdutos implements OnInit {
         this.produtoService.excluirProduto(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => this.messageService.add({ severity: 'warn', summary: 'Produto excluído', detail: 'Produto removido do catálogo.' }),
           error: (err) => {
-            const mensagem = err?.error?.mensagem;
-            if (err?.status === 409 && mensagem) {
-              this.messageService.add({ severity: 'error', summary: 'Exclusão bloqueada', detail: mensagem, life: 6000 });
-            } else {
-              this.erro = 'Erro ao excluir produto';
-            }
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Erro ao excluir',
+              detail: err?.mensagem || 'Erro ao excluir produto',
+              life: 6000,
+            });
           },
         });
       },

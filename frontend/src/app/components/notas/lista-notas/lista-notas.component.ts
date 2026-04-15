@@ -115,7 +115,7 @@ export class ListaNotas {
         this.erro = null;
         this.notaService.cancelarNota(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => this.messageService.add({ severity: 'warn', summary: 'Nota cancelada', detail: 'Nota fiscal cancelada com sucesso.' }),
-          error: () => (this.erro = 'Erro ao cancelar nota fiscal'),
+          error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro ao cancelar', detail: err?.mensagem || 'Erro ao cancelar nota fiscal', life: 6000 }),
         });
       },
     });

@@ -57,6 +57,20 @@ function mapearErro(error: unknown): ApiError {
     };
   }
 
+  if (error.status === 409) {
+    return {
+      mensagem: error.error?.mensagem ?? 'Conflito: a operação não pode ser concluída.',
+      tipo: 'negocio',
+    };
+  }
+
+  if (error.status === 404) {
+    return {
+      mensagem: error.error?.mensagem ?? 'Recurso não encontrado.',
+      tipo: 'negocio',
+    };
+  }
+
   return {
     mensagem: error.error?.mensagem ?? 'Ocorreu um erro inesperado.',
     tipo: 'servidor',
