@@ -19,7 +19,7 @@ export class HealthService implements OnDestroy {
     if (this._polling) return;
     this._polling = true;
 
-    const INTERVAL_MS = 5_000;
+    const INTERVAL_MS = 30_000;
 
     this.sub.add(
       timer(0, INTERVAL_MS).pipe(
