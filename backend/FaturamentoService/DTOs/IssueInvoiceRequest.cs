@@ -1,6 +1,6 @@
 namespace FaturamentoService.DTOs;
 
-public record EmitirNotaFiscalRequest
+public record IssueInvoiceRequest
 {
-    public List<ItemNotaFiscalRequest> Itens { get; init; } = [];
+    public List<InvoiceItemRequest> Items { get; init; } = [];
 }

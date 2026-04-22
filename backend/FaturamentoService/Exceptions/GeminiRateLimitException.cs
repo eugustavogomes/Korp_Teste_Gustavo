@@ -1,4 +1,4 @@
 namespace FaturamentoService.Exceptions;
 
 public class GeminiRateLimitException()
-    : Exception("Limite de requisições da IA atingido. Aguarde alguns segundos e tente novamente.");
+    : Exception("AI request limit reached. Please wait a few seconds and try again.");

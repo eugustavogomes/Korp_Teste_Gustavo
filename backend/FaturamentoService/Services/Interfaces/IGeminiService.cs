@@ -4,5 +4,5 @@ namespace FaturamentoService.Services.Interfaces;
 
 public interface IGeminiService
 {
-    Task<InterpretarPedidoResponse> InterpretarPedidoAsync(InterpretarPedidoRequest request);
+    Task<InterpretOrderResponse> InterpretOrderAsync(InterpretOrderRequest request);
 }

@@ -1,6 +1,6 @@
 namespace FaturamentoService.DTOs;
 
-public record ReservaEstoqueRequest
+public record StockReservationRequest
 {
-    public List<ItemReservaEstoque> Itens { get; init; } = [];
+    public List<StockReservationItem> Items { get; init; } = [];
 }

@@ -8,57 +8,57 @@ namespace EstoqueService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProdutosController : ControllerBase
+public class ProductsController : ControllerBase
 {
-    private readonly IProdutoService _service;
-    private readonly ILogger<ProdutosController> _logger;
+    private readonly IProductService _service;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProdutosController(IProdutoService service, ILogger<ProdutosController> logger)
+    public ProductsController(IProductService service, ILogger<ProductsController> logger)
     {
         _service = service;
         _logger = logger;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Produto>>> GetProdutos()
+    public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         => Ok(await _service.GetAllAsync());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Produto>> GetProduto(int id)
+    public async Task<ActionResult<Product>> GetProduct(int id)
     {
-        var produto = await _service.GetByIdAsync(id);
-        if (produto == null)
+        var product = await _service.GetByIdAsync(id);
+        if (product == null)
             return NotFound();
-        return produto;
+        return product;
     }
 
     [HttpPost]
-    public async Task<ActionResult<Produto>> CreateProduto([FromBody] Produto produto)
+    public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product)
     {
         try
         {
-            var criado = await _service.CreateAsync(produto);
-            return CreatedAtAction(nameof(GetProduto), new { id = criado.Id }, criado);
+            var created = await _service.CreateAsync(product);
+            return CreatedAtAction(nameof(GetProduct), new { id = created.Id }, created);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar produto");
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error creating product");
+            return StatusCode(500, "Internal server error");
         }
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduto(int id, [FromBody] Produto produto)
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
     {
-        if (id != produto.Id)
-            return BadRequest("ID da rota não corresponde ao ID do produto");
+        if (id != product.Id)
+            return BadRequest("Route ID does not match product ID");
 
         try
         {
-            await _service.UpdateAsync(id, produto);
+            await _service.UpdateAsync(id, product);
             return NoContent();
         }
-        catch (ProdutoNotFoundException)
+        catch (ProductNotFoundException)
         {
             return NotFound();
         }
@@ -68,112 +68,112 @@ public class ProdutosController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar produto {Id}", id);
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error updating product {Id}", id);
+            return StatusCode(500, "Internal server error");
         }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProduto(int id)
+    public async Task<IActionResult> DeleteProduct(int id)
     {
         try
         {
             await _service.DeleteAsync(id);
             return NoContent();
         }
-        catch (ProdutoNotFoundException)
+        catch (ProductNotFoundException)
         {
             return NotFound();
         }
-        catch (ProdutoComReservaAtivaException ex)
+        catch (ProductWithActiveReservationException ex)
         {
-            return Conflict(new { mensagem = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao deletar produto {Id}", id);
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error deleting product {Id}", id);
+            return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpPost("reservar-estoque")]
-    public async Task<IActionResult> ReservarEstoque([FromBody] ReservaEstoqueRequest request)
+    [HttpPost("reserve-stock")]
+    public async Task<IActionResult> ReserveStock([FromBody] StockReservationRequest request)
     {
         try
         {
-            await _service.ReservarEstoqueAsync(request);
+            await _service.ReserveStockAsync(request);
             return Ok();
         }
-        catch (ProdutoNotFoundException ex)
+        catch (ProductNotFoundException ex)
         {
-            return NotFound(new { mensagem = ex.Message });
+            return NotFound(new { message = ex.Message });
         }
-        catch (SaldoInsuficienteException ex)
+        catch (InsufficientBalanceException ex)
         {
-            return BadRequest(new { mensagem = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch (ConcurrencyException ex)
         {
-            return Conflict(new { mensagem = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao reservar estoque");
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error reserving stock");
+            return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpPost("liberar-reserva")]
-    public async Task<IActionResult> LiberarReserva([FromBody] ReservaEstoqueRequest request)
+    [HttpPost("release-reservation")]
+    public async Task<IActionResult> ReleaseReservation([FromBody] StockReservationRequest request)
     {
         try
         {
-            await _service.LiberarReservaAsync(request);
+            await _service.ReleaseReservationAsync(request);
             return Ok();
         }
-        catch (ProdutoNotFoundException ex)
+        catch (ProductNotFoundException ex)
         {
-            return NotFound(new { mensagem = ex.Message });
+            return NotFound(new { message = ex.Message });
         }
-        catch (ReservaInsuficienteException ex)
+        catch (InsufficientReservationException ex)
         {
-            return BadRequest(new { mensagem = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch (ConcurrencyException ex)
         {
-            return Conflict(new { mensagem = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao liberar reserva");
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error releasing reservation");
+            return StatusCode(500, "Internal server error");
         }
     }
 
-    [HttpPost("baixa-estoque")]
-    public async Task<IActionResult> BaixarEstoque([FromBody] BaixaEstoqueRequest request)
+    [HttpPost("withdraw-stock")]
+    public async Task<IActionResult> WithdrawStock([FromBody] StockWithdrawalRequest request)
     {
         try
         {
-            await _service.BaixarEstoqueAsync(request);
+            await _service.WithdrawStockAsync(request);
             return Ok();
         }
-        catch (ProdutoNotFoundException ex)
+        catch (ProductNotFoundException ex)
         {
-            return NotFound(new { mensagem = ex.Message });
+            return NotFound(new { message = ex.Message });
         }
-        catch (SaldoInsuficienteException ex)
+        catch (InsufficientBalanceException ex)
         {
-            return BadRequest(new { mensagem = ex.Message });
+            return BadRequest(new { message = ex.Message });
         }
         catch (ConcurrencyException ex)
         {
-            return Conflict(new { mensagem = ex.Message });
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao baixar estoque");
-            return StatusCode(500, "Erro interno do servidor");
+            _logger.LogError(ex, "Error withdrawing stock");
+            return StatusCode(500, "Internal server error");
         }
     }
 }

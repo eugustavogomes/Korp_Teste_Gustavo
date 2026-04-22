@@ -6,35 +6,35 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EstoqueService.Repositories;
 
-public class ProdutoRepository : IProdutoRepository
+public class ProductRepository : IProductRepository
 {
     private readonly EstoqueDbContext _context;
 
-    public ProdutoRepository(EstoqueDbContext context)
+    public ProductRepository(EstoqueDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IEnumerable<Produto>> GetAllAsync()
-        => await _context.Produtos.ToListAsync();
+    public async Task<IEnumerable<Product>> GetAllAsync()
+        => await _context.Products.ToListAsync();
 
-    public async Task<Produto?> GetByIdAsync(int id)
-        => await _context.Produtos.FindAsync(id);
+    public async Task<Product?> GetByIdAsync(int id)
+        => await _context.Products.FindAsync(id);
 
-    public async Task AddAsync(Produto produto)
-        => await _context.Produtos.AddAsync(produto);
+    public async Task AddAsync(Product product)
+        => await _context.Products.AddAsync(product);
 
-    public void Update(Produto produto)
+    public void Update(Product product)
     {
-        _context.Entry(produto).State = EntityState.Modified;
-        _context.Entry(produto).Property(p => p.DataCriacao).IsModified = false;
+        _context.Entry(product).State = EntityState.Modified;
+        _context.Entry(product).Property(p => p.CreatedAt).IsModified = false;
     }
 
-    public void Remove(Produto produto)
-        => _context.Produtos.Remove(produto);
+    public void Remove(Product product)
+        => _context.Products.Remove(product);
 
     public async Task<bool> ExistsAsync(int id)
-        => await _context.Produtos.AnyAsync(p => p.Id == id);
+        => await _context.Products.AnyAsync(p => p.Id == id);
 
     public async Task SaveChangesAsync()
         => await _context.SaveChangesAsync();

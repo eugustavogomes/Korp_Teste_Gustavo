@@ -2,11 +2,11 @@ using FaturamentoService.Models;
 
 namespace FaturamentoService.Repositories.Interfaces;
 
-public interface INotaFiscalRepository
+public interface IInvoiceRepository
 {
-    Task<IEnumerable<NotaFiscal>> GetAllAsync();
-    Task<NotaFiscal?> GetByIdAsync(int id);
-    Task<NotaFiscal?> GetByIdWithItensAsync(int id);
-    Task AddAsync(NotaFiscal notaFiscal);
+    Task<IEnumerable<Invoice>> GetAllAsync();
+    Task<Invoice?> GetByIdAsync(int id);
+    Task<Invoice?> GetByIdWithItemsAsync(int id);
+    Task AddAsync(Invoice invoice);
     Task SaveChangesAsync();
 }

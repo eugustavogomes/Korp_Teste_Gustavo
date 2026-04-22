@@ -4,7 +4,7 @@ namespace FaturamentoService.Services.Interfaces;
 
 public interface IEstoqueClient
 {
-    Task ReservarEstoqueAsync(ReservaEstoqueRequest request);
-    Task LiberarReservaAsync(ReservaEstoqueRequest request);
-    Task BaixarEstoqueAsync(BaixaEstoqueRequest request);
+    Task ReserveStockAsync(StockReservationRequest request);
+    Task ReleaseReservationAsync(StockReservationRequest request);
+    Task WithdrawStockAsync(StockWithdrawalRequest request);
 }

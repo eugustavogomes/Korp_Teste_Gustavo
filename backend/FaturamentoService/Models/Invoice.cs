@@ -1,18 +1,18 @@
 namespace FaturamentoService.Models;
 
-public class NotaFiscal
+public class Invoice
 {
     public int Id { get; set; }
-    public string Numero { get; set; } = string.Empty;
-    public StatusNotaFiscal Status { get; set; }
-    public DateTime DataEmissao { get; set; }
+    public string Number { get; set; } = string.Empty;
+    public InvoiceStatus Status { get; set; }
+    public DateTime IssueDate { get; set; }
     public decimal Total { get; set; }
-    public List<ItemNotaFiscal> Itens { get; set; } = new();
+    public List<InvoiceItem> Items { get; set; } = new();
 }
 
-public enum StatusNotaFiscal
+public enum InvoiceStatus
 {
-    Aberta = 1,
-    Fechada = 2,
-    Cancelada = 3
+    Open = 1,
+    Closed = 2,
+    Cancelled = 3
 }

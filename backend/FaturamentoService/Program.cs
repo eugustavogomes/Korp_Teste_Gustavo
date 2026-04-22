@@ -31,7 +31,7 @@ try
         .AddJsonOptions(o =>
             o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
     builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddValidatorsFromAssemblyContaining<EmitirNotaFiscalRequestValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<IssueInvoiceRequestValidator>();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
@@ -44,7 +44,7 @@ try
             retryCount: 3,
             sleepDurationProvider: attempt => TimeSpan.FromMilliseconds(200 * attempt),
             onRetry: (result, delay, attempt, _) =>
-                Log.Warning("Tentativa {Attempt}/3 de conectar ao EstoqueService. Aguardando {Delay}ms... ({Reason})",
+                Log.Warning("Attempt {Attempt}/3 to connect to EstoqueService. Waiting {Delay}ms... ({Reason})",
                     attempt, delay.TotalMilliseconds, result.Exception?.Message ?? result.Result?.StatusCode.ToString()));
 
     var circuitBreakerPolicy = HttpPolicyExtensions
@@ -53,14 +53,14 @@ try
             handledEventsAllowedBeforeBreaking: 5,
             durationOfBreak: TimeSpan.FromSeconds(30),
             onBreak: (_, duration) =>
-                Log.Warning("EstoqueService indisponível. Circuit aberto por {Duration}s.", duration.TotalSeconds),
+                Log.Warning("EstoqueService unavailable. Circuit open for {Duration}s.", duration.TotalSeconds),
             onReset: () =>
-                Log.Information("EstoqueService disponível novamente. Circuit fechado."),
+                Log.Information("EstoqueService available again. Circuit closed."),
             onHalfOpen: () =>
-                Log.Information("Testando disponibilidade do EstoqueService..."));
+                Log.Information("Testing EstoqueService availability..."));
 
-    builder.Services.AddScoped<INotaFiscalRepository, NotaFiscalRepository>();
-    builder.Services.AddScoped<INotaFiscalService, NotaFiscalService>();
+    builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+    builder.Services.AddScoped<IInvoiceService, InvoiceService>();
     builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
     builder.Services.AddHttpClient("HealthCheck");
@@ -127,7 +127,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Aplicação encerrada inesperadamente");
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
 finally
 {

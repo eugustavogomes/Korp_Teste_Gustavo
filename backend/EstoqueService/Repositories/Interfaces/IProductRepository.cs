@@ -3,13 +3,13 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EstoqueService.Repositories.Interfaces;
 
-public interface IProdutoRepository
+public interface IProductRepository
 {
-    Task<IEnumerable<Produto>> GetAllAsync();
-    Task<Produto?> GetByIdAsync(int id);
-    Task AddAsync(Produto produto);
-    void Update(Produto produto);
-    void Remove(Produto produto);
+    Task<IEnumerable<Product>> GetAllAsync();
+    Task<Product?> GetByIdAsync(int id);
+    Task AddAsync(Product product);
+    void Update(Product product);
+    void Remove(Product product);
     Task<bool> ExistsAsync(int id);
     Task SaveChangesAsync();
     Task<IDbContextTransaction> BeginTransactionAsync();

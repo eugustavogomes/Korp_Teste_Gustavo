@@ -1,15 +1,15 @@
 namespace FaturamentoService.DTOs;
 
-public record InterpretarPedidoRequest
+public record InterpretOrderRequest
 {
-    public string Texto { get; init; } = string.Empty;
-    public List<ProdutoCatalogItem> Produtos { get; init; } = [];
+    public string Text { get; init; } = string.Empty;
+    public List<ProductCatalogItem> Products { get; init; } = [];
 }
 
-public record ProdutoCatalogItem
+public record ProductCatalogItem
 {
     public int Id { get; init; }
-    public string Codigo { get; init; } = string.Empty;
-    public string Descricao { get; init; } = string.Empty;
-    public int SaldoDisponivel { get; init; }
+    public string Code { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public int AvailableBalance { get; init; }
 }

@@ -1,9 +1,9 @@
 namespace FaturamentoService.DTOs;
 
-public record ItemNotaFiscalRequest
+public record InvoiceItemRequest
 {
-    public int ProdutoId { get; init; }
-    public string Descricao { get; init; } = string.Empty;
-    public int Quantidade { get; init; }
-    public decimal PrecoUnitario { get; init; }
+    public int ProductId { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal UnitPrice { get; init; }
 }

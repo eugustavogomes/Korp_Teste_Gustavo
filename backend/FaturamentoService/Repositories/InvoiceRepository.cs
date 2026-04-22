@@ -5,30 +5,30 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FaturamentoService.Repositories;
 
-public class NotaFiscalRepository : INotaFiscalRepository
+public class InvoiceRepository : IInvoiceRepository
 {
     private readonly FaturamentoDbContext _context;
 
-    public NotaFiscalRepository(FaturamentoDbContext context)
+    public InvoiceRepository(FaturamentoDbContext context)
     {
         _context = context;
     }
 
-    public async Task<IEnumerable<NotaFiscal>> GetAllAsync()
-        => await _context.NotasFiscais
-            .Include(n => n.Itens)
+    public async Task<IEnumerable<Invoice>> GetAllAsync()
+        => await _context.Invoices
+            .Include(i => i.Items)
             .ToListAsync();
 
-    public async Task<NotaFiscal?> GetByIdAsync(int id)
-        => await _context.NotasFiscais.FindAsync(id);
+    public async Task<Invoice?> GetByIdAsync(int id)
+        => await _context.Invoices.FindAsync(id);
 
-    public async Task<NotaFiscal?> GetByIdWithItensAsync(int id)
-        => await _context.NotasFiscais
-            .Include(n => n.Itens)
-            .FirstOrDefaultAsync(n => n.Id == id);
+    public async Task<Invoice?> GetByIdWithItemsAsync(int id)
+        => await _context.Invoices
+            .Include(i => i.Items)
+            .FirstOrDefaultAsync(i => i.Id == id);
 
-    public async Task AddAsync(NotaFiscal notaFiscal)
-        => await _context.NotasFiscais.AddAsync(notaFiscal);
+    public async Task AddAsync(Invoice invoice)
+        => await _context.Invoices.AddAsync(invoice);
 
     public async Task SaveChangesAsync()
         => await _context.SaveChangesAsync();

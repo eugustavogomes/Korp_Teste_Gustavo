@@ -1,7 +1,7 @@
 namespace EstoqueService.Exceptions;
 
-public class SaldoInsuficienteException : Exception
+public class InsufficientBalanceException : Exception
 {
-    public SaldoInsuficienteException(string descricao, int disponivel, int solicitado)
-        : base($"Saldo insuficiente para '{descricao}': disponível {disponivel}, solicitado {solicitado}") { }
+    public InsufficientBalanceException(string description, int available, int requested)
+        : base($"Insufficient balance for '{description}': available {available}, requested {requested}") { }
 }

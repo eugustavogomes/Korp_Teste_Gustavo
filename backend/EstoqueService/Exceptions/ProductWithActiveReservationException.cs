@@ -1,9 +1,9 @@
 namespace EstoqueService.Exceptions;
 
-public class ProdutoComReservaAtivaException : Exception
+public class ProductWithActiveReservationException : Exception
 {
-    public ProdutoComReservaAtivaException(string descricao, int saldoReservado)
-        : base($"Produto '{descricao}' possui {saldoReservado} unidade(s) reservada(s) em notas fiscais em aberto e não pode ser excluído.")
+    public ProductWithActiveReservationException(string description, int reservedBalance)
+        : base($"Product '{description}' has {reservedBalance} unit(s) reserved in open invoices and cannot be deleted.")
     {
     }
 }

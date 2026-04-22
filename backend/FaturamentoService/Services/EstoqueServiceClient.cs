@@ -15,54 +15,54 @@ public class EstoqueClient : IEstoqueClient
         _logger = logger;
     }
 
-    public async Task ReservarEstoqueAsync(ReservaEstoqueRequest request)
+    public async Task ReserveStockAsync(StockReservationRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/produtos/reservar-estoque", request);
+        var response = await _httpClient.PostAsJsonAsync("api/products/reserve-stock", request);
 
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            _logger.LogError("EstoqueService retornou {Status}: {Content}", response.StatusCode, content);
+            _logger.LogError("EstoqueService returned {Status}: {Content}", response.StatusCode, content);
 
-            var mensagem = ExtrairMensagem(content) ?? $"Erro {(int)response.StatusCode} no EstoqueService";
-            throw new EstoqueException(mensagem, (int)response.StatusCode);
+            var message = ExtractMessage(content) ?? $"Error {(int)response.StatusCode} from EstoqueService";
+            throw new EstoqueException(message, (int)response.StatusCode);
         }
     }
 
-    public async Task LiberarReservaAsync(ReservaEstoqueRequest request)
+    public async Task ReleaseReservationAsync(StockReservationRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/produtos/liberar-reserva", request);
+        var response = await _httpClient.PostAsJsonAsync("api/products/release-reservation", request);
 
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            _logger.LogError("EstoqueService retornou {Status}: {Content}", response.StatusCode, content);
+            _logger.LogError("EstoqueService returned {Status}: {Content}", response.StatusCode, content);
 
-            var mensagem = ExtrairMensagem(content) ?? $"Erro {(int)response.StatusCode} no EstoqueService";
-            throw new EstoqueException(mensagem, (int)response.StatusCode);
+            var message = ExtractMessage(content) ?? $"Error {(int)response.StatusCode} from EstoqueService";
+            throw new EstoqueException(message, (int)response.StatusCode);
         }
     }
 
-    public async Task BaixarEstoqueAsync(BaixaEstoqueRequest request)
+    public async Task WithdrawStockAsync(StockWithdrawalRequest request)
     {
-        var response = await _httpClient.PostAsJsonAsync("api/produtos/baixa-estoque", request);
+        var response = await _httpClient.PostAsJsonAsync("api/products/withdraw-stock", request);
 
         if (!response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            _logger.LogError("EstoqueService retornou {Status}: {Content}", response.StatusCode, content);
+            _logger.LogError("EstoqueService returned {Status}: {Content}", response.StatusCode, content);
 
-            var mensagem = ExtrairMensagem(content) ?? $"Erro {(int)response.StatusCode} no EstoqueService";
-            throw new EstoqueException(mensagem, (int)response.StatusCode);
+            var message = ExtractMessage(content) ?? $"Error {(int)response.StatusCode} from EstoqueService";
+            throw new EstoqueException(message, (int)response.StatusCode);
         }
     }
 
-    private static string? ExtrairMensagem(string json)
+    private static string? ExtractMessage(string json)
     {
         try
         {
             using var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.TryGetProperty("mensagem", out var prop))
+            if (doc.RootElement.TryGetProperty("message", out var prop))
                 return prop.GetString();
             return json.Length > 0 ? json : null;
         }

@@ -7,41 +7,41 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EstoqueService.Services;
 
-public class ProdutoService : IProdutoService
+public class ProductService : IProductService
 {
-    private readonly IProdutoRepository _repository;
-    private readonly ILogger<ProdutoService> _logger;
+    private readonly IProductRepository _repository;
+    private readonly ILogger<ProductService> _logger;
 
-    public ProdutoService(IProdutoRepository repository, ILogger<ProdutoService> logger)
+    public ProductService(IProductRepository repository, ILogger<ProductService> logger)
     {
         _repository = repository;
         _logger = logger;
     }
 
-    public Task<IEnumerable<Produto>> GetAllAsync()
+    public Task<IEnumerable<Product>> GetAllAsync()
         => _repository.GetAllAsync();
 
-    public Task<Produto?> GetByIdAsync(int id)
+    public Task<Product?> GetByIdAsync(int id)
         => _repository.GetByIdAsync(id);
 
-    public async Task<Produto> CreateAsync(Produto produto)
+    public async Task<Product> CreateAsync(Product product)
     {
-        produto.DataCriacao = DateTime.UtcNow;
-        await _repository.AddAsync(produto);
+        product.CreatedAt = DateTime.UtcNow;
+        await _repository.AddAsync(product);
         await _repository.SaveChangesAsync();
-        return produto;
+        return product;
     }
 
-    public async Task UpdateAsync(int id, Produto produto)
+    public async Task UpdateAsync(int id, Product product)
     {
         var existing = await _repository.GetByIdAsync(id);
         if (existing == null)
-            throw new ProdutoNotFoundException(id);
+            throw new ProductNotFoundException(id);
 
-        existing.Codigo = produto.Codigo;
-        existing.Descricao = produto.Descricao;
-        existing.Saldo = produto.Saldo;
-        existing.DataAtualizacao = DateTime.UtcNow;
+        existing.Code = product.Code;
+        existing.Description = product.Description;
+        existing.Balance = product.Balance;
+        existing.UpdatedAt = DateTime.UtcNow;
 
         try
         {
@@ -55,35 +55,35 @@ public class ProdutoService : IProdutoService
 
     public async Task DeleteAsync(int id)
     {
-        var produto = await _repository.GetByIdAsync(id);
-        if (produto == null)
-            throw new ProdutoNotFoundException(id);
+        var product = await _repository.GetByIdAsync(id);
+        if (product == null)
+            throw new ProductNotFoundException(id);
 
-        if (produto.SaldoReservado > 0)
-            throw new ProdutoComReservaAtivaException(produto.Descricao, produto.SaldoReservado);
+        if (product.ReservedBalance > 0)
+            throw new ProductWithActiveReservationException(product.Description, product.ReservedBalance);
 
-        _repository.Remove(produto);
+        _repository.Remove(product);
         await _repository.SaveChangesAsync();
     }
 
-    public async Task ReservarEstoqueAsync(ReservaEstoqueRequest request)
+    public async Task ReserveStockAsync(StockReservationRequest request)
     {
         await using var transaction = await _repository.BeginTransactionAsync();
 
         try
         {
-            foreach (var item in request.Itens)
+            foreach (var item in request.Items)
             {
-                var produto = await _repository.GetByIdAsync(item.ProdutoId);
+                var product = await _repository.GetByIdAsync(item.ProductId);
 
-                if (produto == null)
-                    throw new ProdutoNotFoundException(item.ProdutoId);
+                if (product == null)
+                    throw new ProductNotFoundException(item.ProductId);
 
-                if (produto.SaldoDisponivel < item.Quantidade)
-                    throw new SaldoInsuficienteException(produto.Descricao, produto.SaldoDisponivel, item.Quantidade);
+                if (product.AvailableBalance < item.Quantity)
+                    throw new InsufficientBalanceException(product.Description, product.AvailableBalance, item.Quantity);
 
-                produto.SaldoReservado += item.Quantidade;
-                produto.DataAtualizacao = DateTime.UtcNow;
+                product.ReservedBalance += item.Quantity;
+                product.UpdatedAt = DateTime.UtcNow;
             }
 
             await _repository.SaveChangesAsync();
@@ -91,32 +91,32 @@ public class ProdutoService : IProdutoService
         }
         catch (DbUpdateConcurrencyException)
         {
-            _logger.LogError("Erro de concorrência ao reservar estoque");
+            _logger.LogError("Concurrency error when reserving stock");
             throw new ConcurrencyException();
         }
     }
 
-    public async Task LiberarReservaAsync(ReservaEstoqueRequest request)
+    public async Task ReleaseReservationAsync(StockReservationRequest request)
     {
         await using var transaction = await _repository.BeginTransactionAsync();
 
         try
         {
-            foreach (var item in request.Itens)
+            foreach (var item in request.Items)
             {
-                var produto = await _repository.GetByIdAsync(item.ProdutoId);
+                var product = await _repository.GetByIdAsync(item.ProductId);
 
-                if (produto == null)
+                if (product == null)
                 {
-                    _logger.LogWarning("Produto {ProdutoId} não encontrado ao liberar reserva — pode ter sido excluído. Ignorando item.", item.ProdutoId);
+                    _logger.LogWarning("Product {ProductId} not found when releasing reservation — it may have been deleted. Ignoring item.", item.ProductId);
                     continue;
                 }
 
-                if (produto.SaldoReservado < item.Quantidade)
-                    throw new ReservaInsuficienteException(produto.Descricao, produto.SaldoReservado, item.Quantidade);
+                if (product.ReservedBalance < item.Quantity)
+                    throw new InsufficientReservationException(product.Description, product.ReservedBalance, item.Quantity);
 
-                produto.SaldoReservado -= item.Quantidade;
-                produto.DataAtualizacao = DateTime.UtcNow;
+                product.ReservedBalance -= item.Quantity;
+                product.UpdatedAt = DateTime.UtcNow;
             }
 
             await _repository.SaveChangesAsync();
@@ -124,31 +124,31 @@ public class ProdutoService : IProdutoService
         }
         catch (DbUpdateConcurrencyException)
         {
-            _logger.LogError("Erro de concorrência ao liberar reserva");
+            _logger.LogError("Concurrency error when releasing reservation");
             throw new ConcurrencyException();
         }
     }
 
-    public async Task BaixarEstoqueAsync(BaixaEstoqueRequest request)
+    public async Task WithdrawStockAsync(StockWithdrawalRequest request)
     {
         await using var transaction = await _repository.BeginTransactionAsync();
 
         try
         {
-            foreach (var item in request.Itens)
+            foreach (var item in request.Items)
             {
-                var produto = await _repository.GetByIdAsync(item.ProdutoId);
+                var product = await _repository.GetByIdAsync(item.ProductId);
 
-                if (produto == null)
-                    throw new ProdutoNotFoundException(item.ProdutoId);
+                if (product == null)
+                    throw new ProductNotFoundException(item.ProductId);
 
-                if (produto.Saldo < item.Quantidade)
-                    throw new SaldoInsuficienteException(produto.Descricao, produto.Saldo, item.Quantidade);
+                if (product.Balance < item.Quantity)
+                    throw new InsufficientBalanceException(product.Description, product.Balance, item.Quantity);
 
-                // Converte a reserva em baixa física
-                produto.Saldo -= item.Quantidade;
-                produto.SaldoReservado = Math.Max(0, produto.SaldoReservado - item.Quantidade);
-                produto.DataAtualizacao = DateTime.UtcNow;
+                // Converts the reservation into physical withdrawal
+                product.Balance -= item.Quantity;
+                product.ReservedBalance = Math.Max(0, product.ReservedBalance - item.Quantity);
+                product.UpdatedAt = DateTime.UtcNow;
             }
 
             await _repository.SaveChangesAsync();
@@ -156,7 +156,7 @@ public class ProdutoService : IProdutoService
         }
         catch (DbUpdateConcurrencyException)
         {
-            _logger.LogError("Erro de concorrência ao baixar estoque");
+            _logger.LogError("Concurrency error when withdrawing stock");
             throw new ConcurrencyException();
         }
     }

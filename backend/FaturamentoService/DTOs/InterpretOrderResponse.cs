@@ -1,16 +1,16 @@
 namespace FaturamentoService.DTOs;
 
-public record InterpretarPedidoResponse
+public record InterpretOrderResponse
 {
-    public List<ItemInterpretado> Itens { get; init; } = [];
-    public List<string> NaoEncontrados { get; init; } = [];
+    public List<InterpretedItem> Items { get; init; } = [];
+    public List<string> NotFound { get; init; } = [];
 }
 
-public record ItemInterpretado
+public record InterpretedItem
 {
-    public int ProdutoId { get; init; }
-    public string Codigo { get; init; } = string.Empty;
-    public string Descricao { get; init; } = string.Empty;
-    public int Quantidade { get; init; }
-    public decimal PrecoUnitario { get; init; }
+    public int ProductId { get; init; }
+    public string Code { get; init; } = string.Empty;
+    public string Description { get; init; } = string.Empty;
+    public int Quantity { get; init; }
+    public decimal UnitPrice { get; init; }
 }

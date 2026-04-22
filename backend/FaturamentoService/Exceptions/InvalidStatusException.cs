@@ -1,7 +1,7 @@
 namespace FaturamentoService.Exceptions;
 
-public class StatusInvalidoException : Exception
+public class InvalidStatusException : Exception
 {
-    public StatusInvalidoException(string mensagem)
-        : base(mensagem) { }
+    public InvalidStatusException(string message)
+        : base(message) { }
 }

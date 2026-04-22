@@ -3,11 +3,11 @@ using FaturamentoService.Models;
 
 namespace FaturamentoService.Services.Interfaces;
 
-public interface INotaFiscalService
+public interface IInvoiceService
 {
-    Task<IEnumerable<NotaFiscal>> GetAllAsync();
-    Task<NotaFiscal?> GetByIdAsync(int id);
-    Task<NotaFiscal> EmitirAsync(EmitirNotaFiscalRequest request);
-    Task ImprimirAsync(int id);
-    Task CancelarAsync(int id);
+    Task<IEnumerable<Invoice>> GetAllAsync();
+    Task<Invoice?> GetByIdAsync(int id);
+    Task<Invoice> IssueAsync(IssueInvoiceRequest request);
+    Task PrintAsync(int id);
+    Task CancelAsync(int id);
 }

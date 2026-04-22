@@ -17,34 +17,34 @@ public class InsightsController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost("interpretar-pedido")]
-    public async Task<ActionResult<InterpretarPedidoResponse>> InterpretarPedido(
-        [FromBody] InterpretarPedidoRequest request)
+    [HttpPost("interpret-order")]
+    public async Task<ActionResult<InterpretOrderResponse>> InterpretOrder(
+        [FromBody] InterpretOrderRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Texto))
-            return BadRequest(new { mensagem = "O texto do pedido não pode ser vazio." });
+        if (string.IsNullOrWhiteSpace(request.Text))
+            return BadRequest(new { message = "The order text cannot be empty." });
 
-        if (request.Produtos.Count == 0)
-            return BadRequest(new { mensagem = "O catálogo de produtos não pode ser vazio." });
+        if (request.Products.Count == 0)
+            return BadRequest(new { message = "The product catalog cannot be empty." });
 
         try
         {
-            var resultado = await _geminiService.InterpretarPedidoAsync(request);
-            return Ok(resultado);
+            var result = await _geminiService.InterpretOrderAsync(request);
+            return Ok(result);
         }
         catch (GeminiRateLimitException ex)
         {
-            return StatusCode(429, new { mensagem = ex.Message });
+            return StatusCode(429, new { message = ex.Message });
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("não configurada"))
+        catch (InvalidOperationException ex) when (ex.Message.Contains("not configured"))
         {
-            _logger.LogError("API Key do Gemini não configurada");
-            return StatusCode(503, new { mensagem = "Serviço de IA não configurado. Verifique a API Key do Gemini." });
+            _logger.LogError("Gemini API Key not configured");
+            return StatusCode(503, new { message = "AI service not configured. Check the Gemini API Key." });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao interpretar pedido com Gemini");
-            return StatusCode(500, new { mensagem = "Erro ao processar o pedido. Tente novamente." });
+            _logger.LogError(ex, "Error interpreting order with Gemini");
+            return StatusCode(500, new { message = "Error processing the order. Please try again." });
         }
     }
 }

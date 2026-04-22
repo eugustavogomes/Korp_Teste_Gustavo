@@ -26,12 +26,12 @@ public class EstoqueServiceHealthCheck : IHealthCheck
             var response = await client.GetAsync($"{baseUrl}/health", cancellationToken);
 
             return response.IsSuccessStatusCode
-                ? HealthCheckResult.Healthy("EstoqueService acessível.")
-                : HealthCheckResult.Degraded($"EstoqueService retornou HTTP {(int)response.StatusCode}.");
+                ? HealthCheckResult.Healthy("EstoqueService accessible.")
+                : HealthCheckResult.Degraded($"EstoqueService returned HTTP {(int)response.StatusCode}.");
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Degraded("EstoqueService inacessível.", ex);
+            return HealthCheckResult.Degraded("EstoqueService inaccessible.", ex);
         }
     }
 }

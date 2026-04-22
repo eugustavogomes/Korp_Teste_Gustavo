@@ -3,5 +3,5 @@ namespace EstoqueService.Exceptions;
 public class ConcurrencyException : Exception
 {
     public ConcurrencyException()
-        : base("Outro processo modificou os dados simultaneamente. Tente novamente.") { }
+        : base("Another process modified the data simultaneously. Please try again.") { }
 }

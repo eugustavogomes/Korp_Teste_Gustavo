@@ -1,7 +1,7 @@
 namespace EstoqueService.Exceptions;
 
-public class ProdutoNotFoundException : Exception
+public class ProductNotFoundException : Exception
 {
-    public ProdutoNotFoundException(int id)
-        : base($"Produto {id} não encontrado") { }
+    public ProductNotFoundException(int id)
+        : base($"Product {id} not found") { }
 }

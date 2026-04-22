@@ -27,15 +27,15 @@ try
 
     builder.Services.AddControllers();
     builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddValidatorsFromAssemblyContaining<BaixaEstoqueRequestValidator>();
+    builder.Services.AddValidatorsFromAssemblyContaining<StockWithdrawalRequestValidator>();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
     builder.Services.AddDbContext<EstoqueDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-    builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-    builder.Services.AddScoped<IProdutoService, ProdutoService>();
+    builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    builder.Services.AddScoped<IProductService, ProductService>();
 
     builder.Services.AddHealthChecks()
         .AddCheck<DatabaseHealthCheck>("database", tags: ["ready"]);
@@ -89,7 +89,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Aplicação encerrada inesperadamente");
+    Log.Fatal(ex, "Application terminated unexpectedly");
 }
 finally
 {

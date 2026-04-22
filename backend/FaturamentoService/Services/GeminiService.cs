@@ -23,39 +23,39 @@ public class GeminiService : IGeminiService
         _logger = logger;
     }
 
-    public async Task<InterpretarPedidoResponse> InterpretarPedidoAsync(InterpretarPedidoRequest request)
+    public async Task<InterpretOrderResponse> InterpretOrderAsync(InterpretOrderRequest request)
     {
         var apiKey = _configuration["Gemini:ApiKey"];
         var model  = _configuration["Gemini:Model"] ?? "gemini-1.5-flash";
 
         if (string.IsNullOrWhiteSpace(apiKey))
-            throw new InvalidOperationException("Chave da API do Gemini não configurada.");
+            throw new InvalidOperationException("Gemini API key not configured.");
 
-        var catalogo = string.Join("\n", request.Produtos.Select(p =>
-            $"[{p.Id}] {p.Codigo} — {p.Descricao} (disponível: {p.SaldoDisponivel})"));
+        var catalog = string.Join("\n", request.Products.Select(p =>
+            $"[{p.Id}] {p.Code} — {p.Description} (available: {p.AvailableBalance})"));
 
         var prompt = $$"""
-            Você é um assistente que interpreta pedidos em linguagem natural e os converte em itens de nota fiscal.
-            Retorne APENAS JSON válido, sem texto adicional, sem markdown, sem blocos de código.
+            You are an assistant that interprets natural language orders and converts them into invoice items.
+            Return ONLY valid JSON, without additional text, without markdown, without code blocks.
 
-            Catálogo de produtos disponíveis:
-            {{catalogo}}
+            Available product catalog:
+            {{catalog}}
 
-            Pedido: "{{request.Texto}}"
+            Order: "{{request.Text}}"
 
-            Regras:
-            - Associe cada item mencionado ao produto mais similar do catálogo
-            - Se a quantidade não for mencionada, assuma 1
-            - Se o preço não for mencionado, use 0
-            - Se um produto mencionado não existir no catálogo, inclua em "naoEncontrados"
-            - Nunca inclua produtos com saldoDisponivel 0 se houver alternativa
+            Rules:
+            - Match each mentioned item to the most similar product in the catalog
+            - If quantity is not mentioned, assume 1
+            - If price is not mentioned, use 0
+            - If a mentioned product does not exist in the catalog, include it in "notFound"
+            - Never include products with availableBalance 0 if there is an alternative
 
-            Formato de resposta:
+            Response format:
             {
-              "itens": [
-                { "produtoId": 1, "codigo": "PROD-001", "descricao": "Nome do produto", "quantidade": 5, "precoUnitario": 2.50 }
+              "items": [
+                { "productId": 1, "code": "PROD-001", "description": "Product name", "quantity": 5, "unitPrice": 2.50 }
               ],
-              "naoEncontrados": ["descrição do que não foi encontrado"]
+              "notFound": ["description of what was not found"]
             }
             """;
 
@@ -79,12 +79,12 @@ public class GeminiService : IGeminiService
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
-            _logger.LogError("Gemini retornou {Status}: {Error}", response.StatusCode, error);
+            _logger.LogError("Gemini returned {Status}: {Error}", response.StatusCode, error);
 
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
                 throw new GeminiRateLimitException();
 
-            throw new InvalidOperationException($"Erro ao chamar o Gemini: {response.StatusCode}");
+            throw new InvalidOperationException($"Error calling Gemini: {response.StatusCode}");
         }
 
         var json = await response.Content.ReadAsStringAsync();
@@ -97,7 +97,7 @@ public class GeminiService : IGeminiService
             .GetProperty("text")
             .GetString() ?? "{}";
 
-        return JsonSerializer.Deserialize<InterpretarPedidoResponse>(responseText, _jsonOptions)
-            ?? new InterpretarPedidoResponse();
+        return JsonSerializer.Deserialize<InterpretOrderResponse>(responseText, _jsonOptions)
+            ?? new InterpretOrderResponse();
     }
 }

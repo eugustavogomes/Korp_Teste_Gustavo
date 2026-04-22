@@ -1,7 +1,7 @@
 namespace FaturamentoService.Exceptions;
 
-public class NotaFiscalNotFoundException : Exception
+public class InvoiceNotFoundException : Exception
 {
-    public NotaFiscalNotFoundException(int id)
-        : base($"Nota fiscal {id} não encontrada") { }
+    public InvoiceNotFoundException(int id)
+        : base($"Invoice {id} not found") { }
 }

@@ -6,119 +6,119 @@ using FaturamentoService.Services.Interfaces;
 
 namespace FaturamentoService.Services;
 
-public class NotaFiscalService : INotaFiscalService
+public class InvoiceService : IInvoiceService
 {
-    private readonly INotaFiscalRepository _repository;
+    private readonly IInvoiceRepository _repository;
     private readonly IEstoqueClient _estoqueClient;
-    private readonly ILogger<NotaFiscalService> _logger;
+    private readonly ILogger<InvoiceService> _logger;
 
-    public NotaFiscalService(
-        INotaFiscalRepository repository,
+    public InvoiceService(
+        IInvoiceRepository repository,
         IEstoqueClient estoqueClient,
-        ILogger<NotaFiscalService> logger)
+        ILogger<InvoiceService> logger)
     {
         _repository = repository;
         _estoqueClient = estoqueClient;
         _logger = logger;
     }
 
-    public Task<IEnumerable<NotaFiscal>> GetAllAsync()
+    public Task<IEnumerable<Invoice>> GetAllAsync()
         => _repository.GetAllAsync();
 
-    public Task<NotaFiscal?> GetByIdAsync(int id)
-        => _repository.GetByIdWithItensAsync(id);
+    public Task<Invoice?> GetByIdAsync(int id)
+        => _repository.GetByIdWithItemsAsync(id);
 
-    public async Task<NotaFiscal> EmitirAsync(EmitirNotaFiscalRequest request)
+    public async Task<Invoice> IssueAsync(IssueInvoiceRequest request)
     {
-        var itens = request.Itens.Select(i => new ItemNotaFiscal
+        var items = request.Items.Select(i => new InvoiceItem
         {
-            ProdutoId = i.ProdutoId,
-            Descricao = i.Descricao,
-            Quantidade = i.Quantidade,
-            PrecoUnitario = i.PrecoUnitario,
-            Subtotal = i.Quantidade * i.PrecoUnitario
+            ProductId = i.ProductId,
+            Description = i.Description,
+            Quantity = i.Quantity,
+            UnitPrice = i.UnitPrice,
+            Subtotal = i.Quantity * i.UnitPrice
         }).ToList();
 
-        var reservaRequest = new ReservaEstoqueRequest
+        var reservationRequest = new StockReservationRequest
         {
-            Itens = itens.Select(i => new ItemReservaEstoque
+            Items = items.Select(i => new StockReservationItem
             {
-                ProdutoId = i.ProdutoId,
-                Quantidade = i.Quantidade
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
             }).ToList()
         };
 
-        await _estoqueClient.ReservarEstoqueAsync(reservaRequest);
+        await _estoqueClient.ReserveStockAsync(reservationRequest);
 
-        var notaFiscal = new NotaFiscal
+        var invoice = new Invoice
         {
-            Numero = string.Empty,
-            DataEmissao = DateTime.UtcNow,
-            Status = StatusNotaFiscal.Aberta,
-            Total = itens.Sum(i => i.Subtotal),
-            Itens = itens
+            Number = string.Empty,
+            IssueDate = DateTime.UtcNow,
+            Status = InvoiceStatus.Open,
+            Total = items.Sum(i => i.Subtotal),
+            Items = items
         };
 
-        await _repository.AddAsync(notaFiscal);
+        await _repository.AddAsync(invoice);
         await _repository.SaveChangesAsync();
 
-        notaFiscal.Numero = $"NF-{notaFiscal.Id:D6}";
+        invoice.Number = $"INV-{invoice.Id:D6}";
         await _repository.SaveChangesAsync();
 
-        _logger.LogInformation("Nota fiscal {Numero} criada com status Aberta. Total: {Total}", notaFiscal.Numero, notaFiscal.Total);
+        _logger.LogInformation("Invoice {Number} created with status Open. Total: {Total}", invoice.Number, invoice.Total);
 
-        return notaFiscal;
+        return invoice;
     }
 
-    public async Task ImprimirAsync(int id)
+    public async Task PrintAsync(int id)
     {
-        var notaFiscal = await _repository.GetByIdWithItensAsync(id);
-        if (notaFiscal == null)
-            throw new NotaFiscalNotFoundException(id);
+        var invoice = await _repository.GetByIdWithItemsAsync(id);
+        if (invoice == null)
+            throw new InvoiceNotFoundException(id);
 
-        if (notaFiscal.Status != StatusNotaFiscal.Aberta)
-            throw new StatusInvalidoException("Apenas notas com status Aberta podem ser impressas.");
+        if (invoice.Status != InvoiceStatus.Open)
+            throw new InvalidStatusException("Only invoices with status Open can be printed.");
 
-        var baixaRequest = new BaixaEstoqueRequest
+        var withdrawalRequest = new StockWithdrawalRequest
         {
-            Itens = notaFiscal.Itens.Select(i => new ItemBaixaEstoque
+            Items = invoice.Items.Select(i => new StockWithdrawalItem
             {
-                ProdutoId = i.ProdutoId,
-                Quantidade = i.Quantidade
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
             }).ToList()
         };
 
-        await _estoqueClient.BaixarEstoqueAsync(baixaRequest);
+        await _estoqueClient.WithdrawStockAsync(withdrawalRequest);
 
-        notaFiscal.Status = StatusNotaFiscal.Fechada;
+        invoice.Status = InvoiceStatus.Closed;
         await _repository.SaveChangesAsync();
 
-        _logger.LogInformation("Nota fiscal {Numero} impressa. Status atualizado para Fechada.", notaFiscal.Numero);
+        _logger.LogInformation("Invoice {Number} printed. Status updated to Closed.", invoice.Number);
     }
 
-    public async Task CancelarAsync(int id)
+    public async Task CancelAsync(int id)
     {
-        var notaFiscal = await _repository.GetByIdWithItensAsync(id);
-        if (notaFiscal == null)
-            throw new NotaFiscalNotFoundException(id);
+        var invoice = await _repository.GetByIdWithItemsAsync(id);
+        if (invoice == null)
+            throw new InvoiceNotFoundException(id);
 
-        if (notaFiscal.Status != StatusNotaFiscal.Aberta)
-            throw new StatusInvalidoException("Apenas notas com status Aberta podem ser canceladas.");
+        if (invoice.Status != InvoiceStatus.Open)
+            throw new InvalidStatusException("Only invoices with status Open can be cancelled.");
 
-        var liberarRequest = new ReservaEstoqueRequest
+        var releaseRequest = new StockReservationRequest
         {
-            Itens = notaFiscal.Itens.Select(i => new ItemReservaEstoque
+            Items = invoice.Items.Select(i => new StockReservationItem
             {
-                ProdutoId = i.ProdutoId,
-                Quantidade = i.Quantidade
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
             }).ToList()
         };
 
-        await _estoqueClient.LiberarReservaAsync(liberarRequest);
+        await _estoqueClient.ReleaseReservationAsync(releaseRequest);
 
-        notaFiscal.Status = StatusNotaFiscal.Cancelada;
+        invoice.Status = InvoiceStatus.Cancelled;
         await _repository.SaveChangesAsync();
 
-        _logger.LogInformation("Nota fiscal {Id} cancelada. Reserva de estoque liberada.", id);
+        _logger.LogInformation("Invoice {Id} cancelled. Stock reservation released.", id);
     }
 }

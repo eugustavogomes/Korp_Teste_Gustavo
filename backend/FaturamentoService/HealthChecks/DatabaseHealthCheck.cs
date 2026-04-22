@@ -17,12 +17,12 @@ public class DatabaseHealthCheck : IHealthCheck
         {
             var canConnect = await _db.Database.CanConnectAsync(cancellationToken);
             return canConnect
-                ? HealthCheckResult.Healthy("Banco de dados acessível.")
-                : HealthCheckResult.Unhealthy("Não foi possível conectar ao banco de dados.");
+                ? HealthCheckResult.Healthy("Database accessible.")
+                : HealthCheckResult.Unhealthy("Unable to connect to database.");
         }
         catch (Exception ex)
         {
-            return HealthCheckResult.Unhealthy("Erro ao verificar banco de dados.", ex);
+            return HealthCheckResult.Unhealthy("Error checking database.", ex);
         }
     }
 }

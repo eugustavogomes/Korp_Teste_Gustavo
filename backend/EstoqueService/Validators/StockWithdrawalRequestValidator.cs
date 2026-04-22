@@ -3,20 +3,20 @@ using EstoqueService.DTOs;
 
 namespace EstoqueService.Validators;
 
-public class BaixaEstoqueRequestValidator : AbstractValidator<BaixaEstoqueRequest>
+public class StockWithdrawalRequestValidator : AbstractValidator<StockWithdrawalRequest>
 {
-    public BaixaEstoqueRequestValidator()
+    public StockWithdrawalRequestValidator()
     {
-        RuleFor(x => x.Itens)
-            .NotEmpty().WithMessage("A lista de itens não pode ser vazia");
+        RuleFor(x => x.Items)
+            .NotEmpty().WithMessage("The items list cannot be empty");
 
-        RuleForEach(x => x.Itens).ChildRules(item =>
+        RuleForEach(x => x.Items).ChildRules(item =>
         {
-            item.RuleFor(x => x.ProdutoId)
-                .GreaterThan(0).WithMessage("ProdutoId deve ser maior que zero");
+            item.RuleFor(x => x.ProductId)
+                .GreaterThan(0).WithMessage("ProductId must be greater than zero");
 
-            item.RuleFor(x => x.Quantidade)
-                .GreaterThan(0).WithMessage("Quantidade deve ser maior que zero");
+            item.RuleFor(x => x.Quantity)
+                .GreaterThan(0).WithMessage("Quantity must be greater than zero");
         });
     }
 }

@@ -1,7 +1,7 @@
 namespace FaturamentoService.DTOs;
 
-public record ItemReservaEstoque
+public record StockReservationItem
 {
-    public int ProdutoId { get; init; }
-    public int Quantidade { get; init; }
+    public int ProductId { get; init; }
+    public int Quantity { get; init; }
 }

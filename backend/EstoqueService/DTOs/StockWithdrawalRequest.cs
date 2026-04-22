@@ -1,6 +1,6 @@
 namespace EstoqueService.DTOs;
 
-public record BaixaEstoqueRequest
+public record StockWithdrawalRequest
 {
-    public List<ItemBaixaEstoque> Itens { get; init; } = [];
+    public List<StockWithdrawalItem> Items { get; init; } = [];
 }

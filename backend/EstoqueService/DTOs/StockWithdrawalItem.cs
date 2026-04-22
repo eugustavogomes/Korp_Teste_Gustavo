@@ -1,7 +1,7 @@
 namespace EstoqueService.DTOs;
 
-public record ItemBaixaEstoque
+public record StockWithdrawalItem
 {
-    public int ProdutoId { get; init; }
-    public int Quantidade { get; init; }
+    public int ProductId { get; init; }
+    public int Quantity { get; init; }
 }
